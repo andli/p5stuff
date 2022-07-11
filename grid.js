@@ -5,10 +5,12 @@ let points;
 
 function setup() {
 	createCanvas(500, 707); // A3 paper size
-	
+	randomSeed(13);
+
 	cols = 5;
 	rows = 8;
 	margin = 5;
+	wiggleFactor = 10;
 	cellWidth = floor(width/cols - margin);
 	
 	cellHeight = floor(height/rows - margin);
@@ -21,7 +23,12 @@ function setup() {
 	}
 
 	// wiggle points
-
+	for (let x = 1; x < cols; x++) {
+		for (let y = 1; y < rows; y++) {
+			points[x][y][0] += random(-wiggleFactor,wiggleFactor);
+			points[x][y][1] += random(-wiggleFactor,wiggleFactor);
+		}
+	}
 }
 
 function draw() {
