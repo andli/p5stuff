@@ -5,8 +5,9 @@ let points;
 let subdivs;
 
 function setup() {
-	createCanvas(500, 707); // A3 paper size
-	randomSeed(14);
+	//createCanvas(500, 707); // A3 paper size
+	createCanvas(500, 707, SVG);
+	randomSeed(15);
 
 	cols = 7;
 	rows = 10;
@@ -49,14 +50,26 @@ function setup() {
 
 function draw() {
 	noLoop();
-    background(0);
+  background(0);
 	stroke(255);
 	strokeWeight(1);
 	
-	//setCenter( floor(width/2), floor(height/2) );
-	//polarTriangle(30, 100, 50);
+  setCenter(width, height);
+  noFill();
+  
+  // polarEllipses( number, widthRadius, heightRadius, distance, [callback] )
+  polarEllipses(100, 0, 0, 0, function(...args) {
+    stroke(args[0]*10);
+    fill(args[0]*5, args[0]*4, args[0]*3, 30);
+      args[2] = args[0]*6;
+      args[3] = args[0]*6;
+      args[4] = args[0]*5;
+      return args;
+  });
 
-	drawMainGrid();
+	//drawMainGrid();
+
+  //save("mySVG.svg");
 
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
