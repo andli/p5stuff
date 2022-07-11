@@ -2,6 +2,7 @@ let rows;
 let cols;
 let margin;
 let points;
+let subdivs;
 
 function setup() {
 	createCanvas(500, 707); // A3 paper size
@@ -10,7 +11,8 @@ function setup() {
 	cols = 5;
 	rows = 8;
 	margin = 5;
-	wiggleFactor = 10;
+	wiggleFactor = 20;
+	subdivs = 4;
 	cellWidth = floor(width/cols - margin);
 	
 	cellHeight = floor(height/rows - margin);
@@ -35,7 +37,6 @@ function draw() {
 	background(0);
 	stroke(255);
 	strokeWeight(1);
-	//line(10,10,200,200);
 	
 	for (let colNo = 0; colNo < cols; colNo++) {
 		for (let rowNo = 0; rowNo < rows; rowNo++) {
@@ -51,6 +52,36 @@ function draw() {
 			if (rowNo == rows-1) { 
 				line(points[colNo][rowNo+1][0], points[colNo][rowNo+1][1], points[colNo+1][rowNo+1][0], points[colNo+1][rowNo+1][1]);
 			} 
+
+			if (colNo > 0 && rowNo > 0) {
+				drawSubdivs(colNo, rowNo);
+			}
+			
+
+		}
+	}
+
+	function drawSubdivs(colNo, rowNo) {
+		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
+			lastX1 = points[colNo - 1][rowNo - 1][0];
+			lastY1 = points[colNo - 1][rowNo - 1][1];
+			lastX2 = points[colNo - 1][rowNo][0];
+			lastY2 = points[colNo - 1][rowNo][1];
+			deltaLastX = (lastX2 - lastX1) / subdivs;
+			deltaLastY = (lastY2 - lastY1) / subdivs;
+
+			currentX1 = points[colNo][rowNo - 1][0];
+			currentY1 = points[colNo][rowNo - 1][1];
+			currentX2 = points[colNo][rowNo][0];
+			currentY2 = points[colNo][rowNo][1];
+			deltaCurrentX = (currentX2 - currentX1) / subdivs;
+			deltaCurrentY = (currentY2 - currentY1) / subdivs;
+
+			line(lastX1 + deltaLastX * subdiv,
+				lastY1 + deltaLastY * subdiv,
+				currentX1 + deltaCurrentX * subdiv,
+				currentY1 + deltaCurrentY * subdiv);
+
 		}
 	}
 }
