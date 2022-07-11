@@ -1,24 +1,22 @@
 let rows;
 let cols;
-let margin;
 let points;
 let subdivs;
 
 function setup() {
-	//createCanvas(500, 707); // A3 paper size
-	createCanvas(1000, 1414, SVG);
-  //setCenter(width/2, height/2);
-	randomSeed(15);
+	createCanvas(1000, 1414, SVG); // A3 paper size
+	randomSeed("bezier");
 
 	cols = 7;
 	rows = 10;
-	margin = 5;
-	wiggleFactor = 45;
-	subdivs = 25;
-	cellWidth = floor(width/cols - margin);
+	wiggleFactor = 30;
+	subdivs = 20;
 	
-	cellHeight = floor(height/rows - margin);
+	cellWidth = floor(width/cols);
+	cellHeight = floor(height/rows);
 	points = [];
+
+	// main grid
 	for (let x = 0; x < cols + 1; x++) {
 		points[x] = [];
 		for (let y = 0; y < rows + 1; y++) {
@@ -54,8 +52,7 @@ function draw() {
 	background(255);
 	stroke(0);
 	strokeWeight(.8);
-	
-  //setCenter(width/2, height/2);
+	noFill();
 	drawMainGrid();
 
 	//save("mySVG.svg");
@@ -65,8 +62,25 @@ function draw() {
 			for (let rowNo = 0; rowNo <= rows; rowNo++) {
 				currentX = points[colNo][rowNo][0];
 				currentY = points[colNo][rowNo][1];
+				
+				if (colNo == 0) {
+					beginShape();
+        			vertex(currentX, currentY);	
+				}
+				
+				
 				if (colNo < cols) {
-					line(currentX, currentY, points[colNo + 1][rowNo][0], points[colNo + 1][rowNo][1]);
+					nextX = points[colNo + 1][rowNo][0];
+					nextY = points[colNo + 1][rowNo][1];
+					//bezierVertex(cx1, cy1, cx2, cy2, x, y)
+					bezierVertex(
+						nextX, 
+						nextY,
+						currentX+20, 
+						currentY+20,
+						nextX+20, 
+						nextY+20
+						);
 				}
 
 				if (rowNo < rows) {
@@ -74,12 +88,13 @@ function draw() {
 				}
 
 				if (colNo > 0 && rowNo > 0) {
-					drawColSubdivs(colNo, rowNo);
-					drawRowSubdivs(colNo, rowNo);
+					//drawColSubdivs(colNo, rowNo);
+					//drawRowSubdivs(colNo, rowNo);
 				}
 
 
 			}
+			endShape();
 		}
 	}
 
@@ -129,11 +144,4 @@ function draw() {
 
 		}
 	}
-}
-
-function cartesian2Polar(x, y){
-    distance = Math.sqrt(x*x + y*y)
-    radians = Math.atan2(y,x) //This takes y first
-    polarCoor = { distance:distance, radians:radians }
-    return polarCoor
 }

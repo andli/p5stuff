@@ -1,24 +1,22 @@
 let rows;
 let cols;
-let margin;
 let points;
 let subdivs;
 
 function setup() {
-	//createCanvas(500, 707); // A3 paper size
-	createCanvas(1000, 1414, SVG);
-  //setCenter(width/2, height/2);
+	createCanvas(1000, 1414, SVG); // A3 paper size
 	randomSeed(15);
 
 	cols = 7;
 	rows = 10;
-	margin = 5;
 	wiggleFactor = 45;
 	subdivs = 25;
-	cellWidth = floor(width/cols - margin);
-	
-	cellHeight = floor(height/rows - margin);
+
+	cellWidth = floor(width/cols);
+	cellHeight = floor(height/rows);
 	points = [];
+
+    // main grid
 	for (let x = 0; x < cols + 1; x++) {
 		points[x] = [];
 		for (let y = 0; y < rows + 1; y++) {
@@ -55,7 +53,6 @@ function draw() {
 	stroke(0);
 	strokeWeight(.8);
 	
-  //setCenter(width/2, height/2);
 	drawMainGrid();
 
 	//save("mySVG.svg");
@@ -129,11 +126,4 @@ function draw() {
 
 		}
 	}
-}
-
-function cartesian2Polar(x, y){
-    distance = Math.sqrt(x*x + y*y)
-    radians = Math.atan2(y,x) //This takes y first
-    polarCoor = { distance:distance, radians:radians }
-    return polarCoor
 }
