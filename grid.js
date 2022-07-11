@@ -8,11 +8,11 @@ function setup() {
 	createCanvas(500, 707); // A3 paper size
 	randomSeed(14);
 
-	cols = 9;
-	rows = 12;
+	cols = 7;
+	rows = 10;
 	margin = 5;
 	wiggleFactor = 20;
-	subdivs = 12;
+	subdivs = 20;
 	cellWidth = floor(width/cols - margin);
 	
 	cellHeight = floor(height/rows - margin);
@@ -67,10 +67,34 @@ function draw() {
             }
 			
 			if (colNo > 0 && rowNo > 0) {
+				drawColSubdivs(colNo, rowNo);
 				drawRowSubdivs(colNo, rowNo);
 			}
 			
 
+		}
+	}
+
+	function drawColSubdivs(colNo, rowNo) {
+		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
+			lastX1 = points[colNo - 1][rowNo - 1][0];
+			lastY1 = points[colNo - 1][rowNo - 1][1];
+			lastX2 = points[colNo][rowNo - 1][0];
+			lastY2 = points[colNo][rowNo - 1][1];
+			deltaLastX = (lastX2 - lastX1) / subdivs;
+			deltaLastY = (lastY2 - lastY1) / subdivs;
+
+			currentX1 = points[colNo - 1][rowNo][0];
+			currentY1 = points[colNo - 1][rowNo][1];
+			currentX2 = points[colNo][rowNo][0];
+			currentY2 = points[colNo][rowNo][1];
+			deltaCurrentX = (currentX2 - currentX1) / subdivs;
+			deltaCurrentY = (currentY2 - currentY1) / subdivs;
+
+			line(lastX1 + deltaLastX * subdiv,
+				lastY1 + deltaLastY * subdiv,
+				currentX1 + deltaCurrentX * subdiv,
+				currentY1 + deltaCurrentY * subdiv);
 		}
 	}
 
