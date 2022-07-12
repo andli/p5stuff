@@ -1,6 +1,20 @@
+let griddata = [];
+let rSize;
+
 function setup() {
 	//createCanvas(500, 707); // A3 paper size
 	createCanvas(1000, 1414, SVG);
+
+	gridSize = [30,45];
+	rSize = 40;
+	maxFillRate = 8;
+
+	for (var i = 0; i < gridSize[0]; i++) {
+		griddata[i] = [];
+		for (var j = 0; j < gridSize[1]; j++) {
+			griddata[i][j] = int(random(1,maxFillRate));
+		}
+	}
 }
 
 function draw() {
@@ -10,18 +24,19 @@ function draw() {
 	strokeWeight(1);
 	noFill();
 
-	rSize = 400;
-	
-	t = new Rectangle(0,0,rSize,rSize);
-	strokeWeight(0.2);
-	rect(t.x, t.y, t.w, t.h);
-
-	pathFill(t, 7);
+	for (var i = 0; i < griddata.length; i++) {
+		for (var j = 0; j < griddata[i].length; j++) {
+			t = new Rectangle(i*rSize,j*rSize,rSize,rSize);
+			pathFill(t, griddata[i][j]);
+		}
+	}
 	
 	function pathFill(rect, divisions) {
 		points = [[0,0]];
 		diag = sqrt(2*rect.w**2);
 		for (var i = 1; i <= divisions; i++) {
+            if (divisions == 1)
+              break;
 			a = sqrt(2*(i*diag/divisions)**2);
             b = sqrt(2*((divisions-i)*diag/divisions)**2);
 			if (i % 2 == 0) {
@@ -32,7 +47,6 @@ function draw() {
 				  points.push([rect.w,0]); 
               }
               else {
-                console.log(i);
                 points.push([rect.w-b,rect.w]); 
 				points.push([rect.w,rect.w-b]);
               }
@@ -45,26 +59,22 @@ function draw() {
 					points.push([0,rect.w]);
               }
               else {
-                console.log(i);
                 points.push([rect.w,rect.w-b]);
                 points.push([rect.w-b,rect.w]); 
 				
               }
 			}
 		}
-		//points_copy = [...points];
-		//while (points_copy.length > 0) {
-		//	mp = points_copy.pop();
-		//	points.push(Rectangle.mirrorImage(-1,-1,rect.h,mp[0], mp[1]));
-		//}
-
 
 		for (var i = 0; i < points.length; i++) {
-			strokeWeight(8);
-			point(points[i][0],points[i][1]);
 			strokeWeight(2);
-			if (i < points.length -1) {
-				line(points[i][0], points[i][1], points[i+1][0], points[i+1][1]);
+			if (i < points.length - 1) {
+				line(
+					points[i][0] + rect.x, 
+					points[i][1] + rect.y, 
+					points[i+1][0] + rect.x, 
+					points[i+1][1] + rect.y
+					);
 			}
 		}
 	}
@@ -79,7 +89,7 @@ class Rectangle {
 	}
 	// Getter
 	get area() {
-		return this.calcArea();
+		return 1; // may not be correct
 	}
 
 	// mirror equation: ax + by + c = 0
@@ -88,7 +98,6 @@ class Rectangle {
         var temp = (-2 * (a * x1 + b * y1 + c)) / (a * a + b * b);
         var x = temp * a + x1;
         var y = temp * b + y1;
-		//console.log([x, y]);
         return [x, y];
       }
 }
