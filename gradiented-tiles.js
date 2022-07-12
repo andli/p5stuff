@@ -1,8 +1,6 @@
 function setup() {
-	createCanvas(500, 707); // A3 paper size
-	//createCanvas(1000, 1414, SVG);
-  
-
+	//createCanvas(500, 707); // A3 paper size
+	createCanvas(1000, 1414, SVG);
 }
 
 function draw() {
@@ -13,21 +11,20 @@ function draw() {
 	noFill();
 
 	rSize = 400;
-
-	margin = 0;
 	
-	t = new Rectangle(margin,margin,rSize,rSize);
+	t = new Rectangle(0,0,rSize,rSize);
 	strokeWeight(0.2);
 	rect(t.x, t.y, t.w, t.h);
-	pathFill(t, 3);
+
+	pathFill(t, 5);
 	
 	function pathFill(rect, divisions) {
 		points = [[0,0]];
 		diag = sqrt(2*rect.w**2);
-		for (var i = 0; i < divisions/2; i++) {
+		for (var i = 1; i <= divisions/2; i++) {
 			a = sqrt(2*(i*diag/divisions)**2);
 			if (i % 2 == 0) {
-				points.push([0,a]);
+				points.push([0,a]); 
 				points.push([a,0]);
 				if (i + 1 >= divisions/2)
 					points.push([rect.w,0]);
@@ -39,6 +36,12 @@ function draw() {
 					points.push([0,rect.w]);
 			}
 		}
+		points_copy = [...points];
+		while (points_copy.length > 0) {
+			mp = points_copy.pop();
+			points.push(Rectangle.mirrorImage(-1,-1,rect.h,mp[0], mp[1]));
+		}
+
 
 		for (var i = 0; i < points.length; i++) {
 			strokeWeight(8);
@@ -62,4 +65,14 @@ class Rectangle {
 	get area() {
 		return this.calcArea();
 	}
+
+	// mirror equation: ax + by + c = 0
+	static mirrorImage(a, b, c, x1, y1) {
+		console.log(a);
+        var temp = (-2 * (a * x1 + b * y1 + c)) / (a * a + b * b);
+        var x = temp * a + x1;
+        var y = temp * b + y1;
+		//console.log([x, y]);
+        return [x, y];
+      }
 }
