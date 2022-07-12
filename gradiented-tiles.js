@@ -16,31 +16,47 @@ function draw() {
 	strokeWeight(0.2);
 	rect(t.x, t.y, t.w, t.h);
 
-	pathFill(t, 4);
+	pathFill(t, 7);
 	
 	function pathFill(rect, divisions) {
 		points = [[0,0]];
 		diag = sqrt(2*rect.w**2);
-		for (var i = 1; i <= divisions/2; i++) {
+		for (var i = 1; i <= divisions; i++) {
 			a = sqrt(2*(i*diag/divisions)**2);
+            b = sqrt(2*((divisions-i)*diag/divisions)**2);
 			if (i % 2 == 0) {
+              if (i < ceil(divisions/2)) {
 				points.push([0,a]); 
 				points.push([a,0]);
-				if (i + 1 >= divisions/2)
-					points.push([rect.w,0]);
+                if (i + 1 == ceil(divisions/2))
+				  points.push([rect.w,0]); 
+              }
+              else {
+                console.log(i);
+                points.push([rect.w-b,rect.w]); 
+				points.push([rect.w,rect.w-b]);
+              }
 			}
 			else {
+              if (i < ceil(divisions/2)) {
 				points.push([a,0]);
 				points.push([0,a]);
-				if (i + 1 >= divisions/2)
+				if (i + 1 == ceil(divisions/2))
 					points.push([0,rect.w]);
+              }
+              else {
+                console.log(i);
+                points.push([rect.w,rect.w-b]);
+                points.push([rect.w-b,rect.w]); 
+				
+              }
 			}
 		}
-		points_copy = [...points];
-		while (points_copy.length > 0) {
-			mp = points_copy.pop();
-			points.push(Rectangle.mirrorImage(-1,-1,rect.h,mp[0], mp[1]));
-		}
+		//points_copy = [...points];
+		//while (points_copy.length > 0) {
+		//	mp = points_copy.pop();
+		//	points.push(Rectangle.mirrorImage(-1,-1,rect.h,mp[0], mp[1]));
+		//}
 
 
 		for (var i = 0; i < points.length; i++) {
