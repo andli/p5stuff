@@ -5,15 +5,17 @@ let subdivs;
 
 function setup() {
 	createCanvas(1000, 1414, SVG); // A3 paper size
-	randomSeed("bezier");
+	//randomSeed(99);
 
-	cols = 7;
-	rows = 10;
-	wiggleFactor = 30;
-	subdivs = 20;
-	
+	cols = 5;
+	rows = 7;
 	cellWidth = floor(width/cols);
 	cellHeight = floor(height/rows);
+
+	wiggleFactorH = cellHeight / 3;
+	wiggleFactorW = cellWidth / 3;
+	subdivs = 20;
+	bFactor = 0.5;
 	points = [];
 
 	// main grid
@@ -29,19 +31,25 @@ function setup() {
 		for (let y = 0; y <= rows; y++) {
 			if (x == 0 || x == cols) {
 				if (y != 0 && y != rows) {
-					// only wiggle edge points along the edge
-					points[x][y][1] += random(-wiggleFactor,wiggleFactor);
+					// only wiggle edge points along the Y edges
+					points[x][y][1] += random(-wiggleFactorH,0);
 			}}
 			else {
-				points[x][y][0] += random(-wiggleFactor,wiggleFactor);
+				if (x%1 ==0) 
+					points[x][y][0] += random(0,wiggleFactorW);
+				else 
+					points[x][y][0] += random(-wiggleFactorW,0);
 			}
 			if (y == 0 || y == rows) {
 				if( x != 0 && x != cols) {
-          // only wiggle edge points along the edge
-					points[x][y][0] += random(-wiggleFactor,wiggleFactor);
+					// only wiggle edge points along the X edges
+					points[x][y][0] += random(-wiggleFactorW,0);
 			}}
 			else {
-				points[x][y][1] += random(-wiggleFactor,wiggleFactor);
+				if (y%2 ==0) 
+					points[x][y][1] += random(0,wiggleFactorH);
+				else 
+					points[x][y][1] += random(-wiggleFactorH,0);
 			}
 		}
 	}
@@ -51,7 +59,7 @@ function draw() {
 	noLoop();
 	background(255);
 	stroke(0);
-	strokeWeight(.8);
+	strokeWeight(1);
 	noFill();
 	drawMainGrid();
 
@@ -60,88 +68,71 @@ function draw() {
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
 			for (let rowNo = 0; rowNo <= rows; rowNo++) {
-				currentX = points[colNo][rowNo][0];
-				currentY = points[colNo][rowNo][1];
+				cX = points[colNo][rowNo][0];
+				cY = points[colNo][rowNo][1];
+				strokeWeight(10);
+				point(cX,cY);
+				strokeWeight(1);
+				
+				if (rowNo == 0) {
+					beginShape();
+        			vertex(cX, cY);	
+				}
+				if (rowNo < rows) {
+					nextX = points[colNo][rowNo+1][0];
+					nextY = points[colNo][rowNo+1][1];
+					lastHeight = nextY - cY;
+					//line(nextX, nextY, nextX, nextY);
+					//bezierVertex(cx1, cy1, cx2, cy2, x, y)
+					bezierVertex(
+						cX, 
+						cY+bFactor*lastHeight,
+						nextX,
+						nextY-bFactor*lastHeight,
+						nextX, 
+						nextY,
+						);
+				}
+				if (rowNo == rows) {
+					endShape();
+				}
+			}
+		}
+
+		for (let rowNo = 0; rowNo <= rows; rowNo++) {
+			for (let colNo = 0; colNo <= cols; colNo++) {
+				cX = points[colNo][rowNo][0];
+				cY = points[colNo][rowNo][1];
+				strokeWeight(10);
+				point(cX,cY);
+				strokeWeight(1);
 				
 				if (colNo == 0) {
 					beginShape();
-        			vertex(currentX, currentY);	
+        			vertex(cX, cY);	
 				}
-				
-				
 				if (colNo < cols) {
-					nextX = points[colNo + 1][rowNo][0];
-					nextY = points[colNo + 1][rowNo][1];
+					nextX = points[colNo+1][rowNo][0];
+					nextY = points[colNo+1][rowNo][1];
+					lastWidth = nextX - cX;
+					//line(nextX, nextY, nextX, nextY);
 					//bezierVertex(cx1, cy1, cx2, cy2, x, y)
 					bezierVertex(
+						cX+bFactor*lastWidth, 
+						cY,
+						nextX-bFactor*lastWidth,
+						nextY,
 						nextX, 
 						nextY,
-						currentX+20, 
-						currentY+20,
-						nextX+20, 
-						nextY+20
 						);
 				}
-
-				if (rowNo < rows) {
-					line(currentX, currentY, points[colNo][rowNo + 1][0], points[colNo][rowNo + 1][1]);
+				if (colNo == cols) {
+					endShape();
 				}
-
-				if (colNo > 0 && rowNo > 0) {
-					//drawColSubdivs(colNo, rowNo);
-					//drawRowSubdivs(colNo, rowNo);
-				}
-
-
 			}
-			endShape();
 		}
+		
 	}
 
-	function drawColSubdivs(colNo, rowNo) {
-		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
-			lastX1 = points[colNo - 1][rowNo - 1][0];
-			lastY1 = points[colNo - 1][rowNo - 1][1];
-			lastX2 = points[colNo][rowNo - 1][0];
-			lastY2 = points[colNo][rowNo - 1][1];
-			deltaLastX = (lastX2 - lastX1) / subdivs;
-			deltaLastY = (lastY2 - lastY1) / subdivs;
-
-			currentX1 = points[colNo - 1][rowNo][0];
-			currentY1 = points[colNo - 1][rowNo][1];
-			currentX2 = points[colNo][rowNo][0];
-			currentY2 = points[colNo][rowNo][1];
-			deltaCurrentX = (currentX2 - currentX1) / subdivs;
-			deltaCurrentY = (currentY2 - currentY1) / subdivs;
-
-			line(lastX1 + deltaLastX * subdiv,
-				lastY1 + deltaLastY * subdiv,
-				currentX1 + deltaCurrentX * subdiv,
-				currentY1 + deltaCurrentY * subdiv);
-		}
-	}
-
-	function drawRowSubdivs(colNo, rowNo) {
-		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
-			lastX1 = points[colNo - 1][rowNo - 1][0];
-			lastY1 = points[colNo - 1][rowNo - 1][1];
-			lastX2 = points[colNo - 1][rowNo][0];
-			lastY2 = points[colNo - 1][rowNo][1];
-			deltaLastX = (lastX2 - lastX1) / subdivs;
-			deltaLastY = (lastY2 - lastY1) / subdivs;
-
-			currentX1 = points[colNo][rowNo - 1][0];
-			currentY1 = points[colNo][rowNo - 1][1];
-			currentX2 = points[colNo][rowNo][0];
-			currentY2 = points[colNo][rowNo][1];
-			deltaCurrentX = (currentX2 - currentX1) / subdivs;
-			deltaCurrentY = (currentY2 - currentY1) / subdivs;
-
-			line(lastX1 + deltaLastX * subdiv,
-				lastY1 + deltaLastY * subdiv,
-				currentX1 + deltaCurrentX * subdiv,
-				currentY1 + deltaCurrentY * subdiv);
-
-		}
-	}
+	
 }

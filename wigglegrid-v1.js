@@ -5,18 +5,18 @@ let subdivs;
 
 function setup() {
 	createCanvas(1000, 1414, SVG); // A3 paper size
-	randomSeed(15);
+	randomSeed(11);
 
 	cols = 7;
 	rows = 10;
-	wiggleFactor = 45;
+	wiggleDistance = 45;
 	subdivs = 25;
 
 	cellWidth = floor(width/cols);
 	cellHeight = floor(height/rows);
 	points = [];
 
-    // main grid
+    // main grid data
 	for (let x = 0; x < cols + 1; x++) {
 		points[x] = [];
 		for (let y = 0; y < rows + 1; y++) {
@@ -30,18 +30,18 @@ function setup() {
 			if (x == 0 || x == cols) {
 				if (y != 0 && y != rows) {
 					// only wiggle edge points along the edge
-					points[x][y][1] += random(-wiggleFactor,wiggleFactor);
+					points[x][y][1] += random(-wiggleDistance,wiggleDistance);
 			}}
 			else {
-				points[x][y][0] += random(-wiggleFactor,wiggleFactor);
+				points[x][y][0] += random(-wiggleDistance,wiggleDistance);
 			}
 			if (y == 0 || y == rows) {
 				if( x != 0 && x != cols) {
-          // only wiggle edge points along the edge
-					points[x][y][0] += random(-wiggleFactor,wiggleFactor);
+					// only wiggle edge points along the edge
+					points[x][y][0] += random(-wiggleDistance,wiggleDistance);
 			}}
 			else {
-				points[x][y][1] += random(-wiggleFactor,wiggleFactor);
+				points[x][y][1] += random(-wiggleDistance,wiggleDistance);
 			}
 		}
 	}
@@ -51,11 +51,11 @@ function draw() {
 	noLoop();
 	background(255);
 	stroke(0);
-	strokeWeight(.8);
-	
+	strokeWeight(0.8);
+	noFill();
 	drawMainGrid();
 
-	//save("mySVG.svg");
+	//save("out.svg");
 
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
@@ -74,8 +74,6 @@ function draw() {
 					drawColSubdivs(colNo, rowNo);
 					drawRowSubdivs(colNo, rowNo);
 				}
-
-
 			}
 		}
 	}
