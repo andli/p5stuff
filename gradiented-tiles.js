@@ -16,7 +16,7 @@ function draw() {
 	strokeWeight(0.2);
 	rect(t.x, t.y, t.w, t.h);
 
-	pathFill(t, 5);
+	pathFill(t, 4);
 	
 	function pathFill(rect, divisions) {
 		points = [[0,0]];
