@@ -8,12 +8,13 @@ function setup() {
 	//randomSeed(99);
 
 	cols = 5;
-	rows = 7;
+	rows = 8;
 	cellWidth = floor(width/cols);
 	cellHeight = floor(height/rows);
 
-	wiggleFactorH = cellHeight / 3;
-	wiggleFactorW = cellWidth / 3;
+	wf = 2;
+	wiggleFactorH = cellHeight / wf;
+	wiggleFactorW = cellWidth / wf;
 	subdivs = 20;
 	bFactor = 0.5;
 	points = [];
@@ -35,10 +36,8 @@ function setup() {
 					points[x][y][1] += random(-wiggleFactorH,0);
 			}}
 			else {
-				if (x%1 ==0) 
-					points[x][y][0] += random(0,wiggleFactorW);
-				else 
-					points[x][y][0] += random(-wiggleFactorW,0);
+				points[x][y][0] += random(-wiggleFactorW,wiggleFactorW);
+
 			}
 			if (y == 0 || y == rows) {
 				if( x != 0 && x != cols) {
@@ -46,10 +45,7 @@ function setup() {
 					points[x][y][0] += random(-wiggleFactorW,0);
 			}}
 			else {
-				if (y%2 ==0) 
-					points[x][y][1] += random(0,wiggleFactorH);
-				else 
-					points[x][y][1] += random(-wiggleFactorH,0);
+				points[x][y][1] += random(-wiggleFactorH,wiggleFactorH);
 			}
 		}
 	}
@@ -59,7 +55,7 @@ function draw() {
 	noLoop();
 	background(255);
 	stroke(0);
-	strokeWeight(1);
+	strokeWeight(1.5);
 	noFill();
 	drawMainGrid();
 
@@ -70,9 +66,9 @@ function draw() {
 			for (let rowNo = 0; rowNo <= rows; rowNo++) {
 				cX = points[colNo][rowNo][0];
 				cY = points[colNo][rowNo][1];
-				strokeWeight(10);
-				point(cX,cY);
-				strokeWeight(1);
+				// strokeWeight(10);
+				// point(cX,cY);
+				// strokeWeight(1);
 				
 				if (rowNo == 0) {
 					beginShape();
@@ -103,9 +99,9 @@ function draw() {
 			for (let colNo = 0; colNo <= cols; colNo++) {
 				cX = points[colNo][rowNo][0];
 				cY = points[colNo][rowNo][1];
-				strokeWeight(10);
-				point(cX,cY);
-				strokeWeight(1);
+				// strokeWeight(10);
+				// point(cX,cY);
+				// strokeWeight(1);
 				
 				if (colNo == 0) {
 					beginShape();
