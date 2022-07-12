@@ -5,7 +5,7 @@ function setup() {
 	//createCanvas(500, 707); // A3 paper size
 	createCanvas(1000, 1414, SVG);
 
-	gridSize = [30,45];
+	gridSize = [24,35];
 	rSize = 40;
 	maxFillRate = 8;
 
