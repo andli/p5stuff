@@ -17,7 +17,7 @@ function setup() {
 	subdivs = 25;
 	innerMargin = 60;
 
-	cellWidth = (0.5*width-innerMargin)/cols;
+	cellWidth = (0.45*width-innerMargin)/cols;
 	cellHeight = Math.PI*2/rows;
 	points = [];
 
@@ -34,47 +34,15 @@ function setup() {
 	//TODO: wiggle edges to the same points
 
 	function wiggle() {
-		for (let c = 0; c <= cols; c++) {
-			for (let r = 0; r <= rows; r++) {
-				if (c == 0 || c == cols) {
-					if (r != 0 && r != rows) {
-						// only wiggle col points in the middle
-						points[c][r][1] += random(-wiggleT,wiggleT);
-					}
-				}
-				else {
-					if (r == 0) {
-						points[c][r][0] += random(-wiggleR,wiggleR);
-						
-					}
-					if (r == rows) {
-						points[c][r][0] = points[c][0][0];
-
-					}
-
-				}
-				"radius"
-				if( c != 0 && c != cols) {
-						//only wiggle edge points along the edge
-
-						points[c][r][0] += random(-wiggleR,wiggleR);
-				}
-				else {
-					if (c == 0) {
-						points[c][r][1] += random(-wiggleT,wiggleT);
-						
-					}
-					if (c == rows) {
-						points[c][r][1] = points[0][c][1];
-
-					}
-				}
+		for (let c = 1; c < cols; c++) {
+			for (let r = 0; r < rows; r++) {
+				points[c][r][1] += random(-wiggleT,wiggleT);
+				points[c][r][0] += random(-wiggleR,wiggleR);
 			}
-			for (let x = 0; x <= cols; x++) {
-				//points[x][cols][0] = points[x][0][0];
+			for (let x = 0; x < cols; x++) {
 				points[x][rows][0] = points[x][0][0];
+				points[x][rows][1] = points[x][0][1];
 			}
-
 		}
 	}
 }
@@ -91,7 +59,7 @@ function draw() {
 
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
-			for (let rowNo = 0; rowNo <= rows; rowNo++) {
+			for (let rowNo = 0; rowNo <= rows-1; rowNo++) {
 				currentX = points[colNo][rowNo][0];
 				currentY = points[colNo][rowNo][1];
 				if (colNo < cols) {
