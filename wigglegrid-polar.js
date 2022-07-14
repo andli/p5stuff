@@ -8,23 +8,24 @@ function setup() {
 	createCanvas(1000, 1000); // A3 paper size
 	//createCanvas(1000, 1414, SVG);
 
-	randomSeed(11);
+	randomSeed(3);
 
-	cols = 6;
-	rows = 22;
-	wiggleDistanceR = 25;
-	wiggleDistanceT = .1;
+	cols = 3;
+	rows = 19;
+	wiggleR = 24;
+	wiggleT = .1;
 	subdivs = 25;
+	innerMargin = 60;
 
-	cellWidth = 0.5*width/cols;
+	cellWidth = (0.5*width-innerMargin)/cols;
 	cellHeight = Math.PI*2/rows;
 	points = [];
 
 	points = [];
-	for (let x = 0; x < cols + 1; x++) {
-		points[x] = [];
-		for (let y = 0; y < rows + 1; y++) {
-			points[x][y] = [cellWidth*x, cellHeight*y];
+	for (let c = 0; c < cols + 1; c++) {
+		points[c] = [];
+		for (let r = 0; r < rows + 1; r++) {
+			points[c][r] = [cellWidth*c+innerMargin, cellHeight*r];
 		} 
 	}
 
@@ -33,38 +34,47 @@ function setup() {
 	//TODO: wiggle edges to the same points
 
 	function wiggle() {
-		for (let x = 0; x <= cols; x++) {
-			for (let y = 0; y <= rows; y++) {
-				if (x == 0 || x == cols) {
-					if (y != 0 && y != rows) {
-						// only wiggle edge points along the edge
-						points[x][y][1] += random(-wiggleDistanceT,wiggleDistanceT);
-				}}
+		for (let c = 0; c <= cols; c++) {
+			for (let r = 0; r <= rows; r++) {
+				if (c == 0 || c == cols) {
+					if (r != 0 && r != rows) {
+						// only wiggle col points in the middle
+						points[c][r][1] += random(-wiggleT,wiggleT);
+					}
+				}
 				else {
-					if (y == 0) {
-						points[x][y][0] += random(-wiggleDistanceR,wiggleDistanceR);
-						console.log(points[x][y][0]);
+					if (r == 0) {
+						points[c][r][0] += random(-wiggleR,wiggleR);
 						
 					}
-					if (y == cols) {
-						console.log(points[x][0][1]);
-						points[x][y][0] == points[x][0][1];
+					if (r == rows) {
+						points[c][r][0] = points[c][0][0];
 
 					}
 
 				}
-				// "radius"
-				if (y == 0 || y == rows) {
-					if( x != 0 && x != cols) {
-						// only wiggle edge points along the edge
-						points[x][y][0] += random(-wiggleDistanceR,wiggleDistanceR);
-				}}
-				else {
-					points[x][y][1] += random(-wiggleDistanceT,wiggleDistanceT);
-	
+				"radius"
+				if( c != 0 && c != cols) {
+						//only wiggle edge points along the edge
 
+						points[c][r][0] += random(-wiggleR,wiggleR);
+				}
+				else {
+					if (c == 0) {
+						points[c][r][1] += random(-wiggleT,wiggleT);
+						
+					}
+					if (c == rows) {
+						points[c][r][1] = points[0][c][1];
+
+					}
 				}
 			}
+			for (let x = 0; x <= cols; x++) {
+				//points[x][cols][0] = points[x][0][0];
+				points[x][rows][0] = points[x][0][0];
+			}
+
 		}
 	}
 }
@@ -102,19 +112,19 @@ function draw() {
 
 	function drawColSubdivs(colNo, rowNo) {
 		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
-			lastX1 = points[colNo - 1][rowNo - 1][0];
-			lastY1 = points[colNo - 1][rowNo - 1][1];
-			lastX2 = points[colNo][rowNo - 1][0];
-			lastY2 = points[colNo][rowNo - 1][1];
-			deltaLastX = (lastX2 - lastX1) / subdivs;
-			deltaLastY = (lastY2 - lastY1) / subdivs;
+			let lastX1 = points[colNo - 1][rowNo - 1][0];
+			let lastY1 = points[colNo - 1][rowNo - 1][1];
+			let lastX2 = points[colNo][rowNo - 1][0];
+			let lastY2 = points[colNo][rowNo - 1][1];
+			let deltaLastX = (lastX2 - lastX1) / subdivs;
+			let deltaLastY = (lastY2 - lastY1) / subdivs;
 
-			currentX1 = points[colNo - 1][rowNo][0];
-			currentY1 = points[colNo - 1][rowNo][1];
-			currentX2 = points[colNo][rowNo][0];
-			currentY2 = points[colNo][rowNo][1];
-			deltaCurrentX = (currentX2 - currentX1) / subdivs;
-			deltaCurrentY = (currentY2 - currentY1) / subdivs;
+			let currentX1 = points[colNo - 1][rowNo][0];
+			let currentY1 = points[colNo - 1][rowNo][1];
+			let currentX2 = points[colNo][rowNo][0];
+			let currentY2 = points[colNo][rowNo][1];
+			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
+			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
 			line(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
@@ -125,19 +135,19 @@ function draw() {
 
 	function drawRowSubdivs(colNo, rowNo) {
 		for (let subdiv = 1; subdiv < subdivs; subdiv++) {
-			lastX1 = points[colNo - 1][rowNo - 1][0];
-			lastY1 = points[colNo - 1][rowNo - 1][1];
-			lastX2 = points[colNo - 1][rowNo][0];
-			lastY2 = points[colNo - 1][rowNo][1];
-			deltaLastX = (lastX2 - lastX1) / subdivs;
-			deltaLastY = (lastY2 - lastY1) / subdivs;
+			let lastX1 = points[colNo - 1][rowNo - 1][0];
+			let lastY1 = points[colNo - 1][rowNo - 1][1];
+			let lastX2 = points[colNo - 1][rowNo][0];
+			let lastY2 = points[colNo - 1][rowNo][1];
+			let deltaLastX = (lastX2 - lastX1) / subdivs;
+			let deltaLastY = (lastY2 - lastY1) / subdivs;
 
-			currentX1 = points[colNo][rowNo - 1][0];
-			currentY1 = points[colNo][rowNo - 1][1];
-			currentX2 = points[colNo][rowNo][0];
-			currentY2 = points[colNo][rowNo][1];
-			deltaCurrentX = (currentX2 - currentX1) / subdivs;
-			deltaCurrentY = (currentY2 - currentY1) / subdivs;
+			let currentX1 = points[colNo][rowNo - 1][0];
+			let currentY1 = points[colNo][rowNo - 1][1];
+			let currentX2 = points[colNo][rowNo][0];
+			let currentY2 = points[colNo][rowNo][1];
+			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
+			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
 			line(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
