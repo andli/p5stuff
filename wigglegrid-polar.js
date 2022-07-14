@@ -12,8 +12,8 @@ function setup() {
 
 	cols = 8;
 	rows = 19;
-	wiggleR = 24;
-	wiggleT = .1;
+	wiggleR = 28;
+	wiggleT = .18;
 	subdivs = 10;
 	innerMargin = 70;
 
