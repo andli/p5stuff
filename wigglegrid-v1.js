@@ -7,10 +7,10 @@ function setup() {
 	createCanvas(1000, 1414, SVG); // A3 paper size
 	randomSeed(11);
 
-	cols = 7;
-	rows = 10;
-	wiggleDistance = 45;
-	subdivs = 25;
+	cols = 5;
+	rows = 5;
+	wiggleDistance = 55;
+	subdivs = 3;
 
 	cellWidth = floor(width/cols);
 	cellHeight = floor(height/rows);
