@@ -12,8 +12,8 @@ function setup() {
 
 	cols = 8;
 	rows = 19;
-	cols = 4;
-	rows = 9;
+	cols = 2;
+	rows = 4;
 	wiggleR = 24;
 	wiggleT = .1;
 	subdivs = 6;
@@ -86,8 +86,8 @@ function draw() {
 			}
 		}
 	}
-	for (let colNo = 1; colNo <= cols/2; colNo++) {
-		for (let rowNo = 1; rowNo <= rows/2; rowNo++) {
+	for (let colNo = 1; colNo <= cols-cols+1; colNo++) {
+		for (let rowNo = 1; rowNo <= rows-rows+1; rowNo++) {
 			drawColSubdivs(colNo, rowNo);
 			drawRowSubdivs(colNo, rowNo);
 		}
@@ -109,6 +109,7 @@ function draw() {
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
+			//TODO: fix wrong interpolation data
 			plinei(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
