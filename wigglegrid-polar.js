@@ -5,8 +5,8 @@ let points;
 let subdivs;
 
 function setup() {
-	createCanvas(1000, 1000); // A3 paper size
-	//createCanvas(1000, 1414, SVG);
+	createCanvas(1000, 1000, SVG); 
+	//createCanvas(1000, 1414, SVG);// A3 paper size
 
 	randomSeed(3);
 
@@ -32,7 +32,6 @@ function setup() {
 
 	// wiggle points
 	wiggle();
-	//TODO: wiggle edges to the same points
 
 	function wiggle() {
 		for (let c = 0; c <= cols; c++) {
@@ -63,6 +62,14 @@ function draw() {
 	translate(width/2,height/2);
 
 	drawMainGrid();
+	for (let colNo = 1; colNo <= cols; colNo++) {
+		for (let rowNo = 1; rowNo <= rows; rowNo++) {
+			drawColSubdivs(colNo, rowNo);
+			drawRowSubdivs(colNo, rowNo);
+		}
+	}
+	
+	//save("out2.svg");
 
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
@@ -82,12 +89,6 @@ function draw() {
 				}
 
 			}
-		}
-	}
-	for (let colNo = 1; colNo <= cols; colNo++) {
-		for (let rowNo = 1; rowNo <= rows; rowNo++) {
-			drawColSubdivs(colNo, rowNo);
-			drawRowSubdivs(colNo, rowNo);
 		}
 	}
 
