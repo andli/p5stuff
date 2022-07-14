@@ -12,9 +12,11 @@ function setup() {
 
 	cols = 8;
 	rows = 19;
+	cols = 4;
+	rows = 9;
 	wiggleR = 24;
 	wiggleT = .1;
-	subdivs = 5;
+	subdivs = 6;
 	innerMargin = 70;
 
 	cellWidth = (0.48*width-innerMargin)/cols;
@@ -58,7 +60,7 @@ function draw() {
 	noLoop();
 	background(255);
 	stroke(0);
-	strokeWeight(0.8);
+	strokeWeight(1);
 	noFill();
 	translate(width/2,height/2);
 
@@ -70,18 +72,22 @@ function draw() {
 				currentX = points[colNo][rowNo][0];
 				currentY = points[colNo][rowNo][1];
 				if (colNo < cols) {
+					strokeWeight(2);
 					pline(currentX, currentY, points[colNo + 1][rowNo][0], points[colNo + 1][rowNo][1]);
+					strokeWeight(1);
 				}
 
 				if (rowNo < rows) {
+					strokeWeight(2);
 					pline(currentX, currentY, points[colNo][rowNo + 1][0], points[colNo][rowNo + 1][1]);
+					strokeWeight(1);
 				}
 
 			}
 		}
 	}
-	for (let colNo = 1; colNo <= cols; colNo++) {
-		for (let rowNo = 1; rowNo <= rows; rowNo++) {
+	for (let colNo = 1; colNo <= cols/2; colNo++) {
+		for (let rowNo = 1; rowNo <= rows/2; rowNo++) {
 			drawColSubdivs(colNo, rowNo);
 			drawRowSubdivs(colNo, rowNo);
 		}
@@ -103,7 +109,7 @@ function draw() {
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
-			pline(lastX1 + deltaLastX * subdiv,
+			plinei(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
 				currentY1 + deltaCurrentY * subdiv);
@@ -126,9 +132,6 @@ function draw() {
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 			
-			// console.log(points[colNo][rowNo - 1]);
-			// if (rowNo == rows)
-			// 	break;
 			pline(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
@@ -142,6 +145,36 @@ function pline(r1,t1,r2,t2) {
 	let c1 = polar2Cartesian(r1,t1);
 	let c2 = polar2Cartesian(r2,t2);
 	line(c1.x,c1.y,c2.x,c2.y);
+}
+
+function plinei(r1,t1,r2,t2) {
+	let linePoints = [];
+	let c1 = polar2Cartesian(r1,t1);
+	let c2 = polar2Cartesian(r2,t2);
+	linePoints.push(c1);
+
+	for(let i = 0 ; i < subdivs; i++){
+		let interpolationAmount = map(i, 0, subdivs - 1, 0.0, 1.0);
+    	// calculate interpolated position
+    	let interpolated = {
+			x:lerp(c1.x, c2.x, interpolationAmount),
+    		y:lerp(c1.y, c2.y, interpolationAmount)
+		};
+		linePoints.push(interpolated);
+	}
+	linePoints.push(c2);
+	
+	for(let p = 0; p < linePoints.length-1; p++) {
+		// strokeWeight(5);
+		// point(linePoints[p].x,linePoints[p].y)
+		// strokeWeight(1);
+		line(
+			linePoints[p].x,
+			linePoints[p].y,
+			linePoints[p+1].x,
+			linePoints[p+1].y
+			);
+	}
 }
 
 function polar2Cartesian(r, theta) {
