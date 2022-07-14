@@ -14,11 +14,12 @@ function setup() {
 	rows = 19;
 	wiggleR = 24;
 	wiggleT = .1;
-	subdivs = 15;
+	subdivs = 5;
 	innerMargin = 70;
 
-	cellWidth = (0.45*width-innerMargin)/cols;
+	cellWidth = (0.48*width-innerMargin)/cols;
 	cellHeight = Math.PI*2/rows;
+	totalHeight = cellHeight * rows;
 	points = [];
 
 	points = [];
@@ -47,7 +48,7 @@ function setup() {
 			// marry the two "ends" of the matrix
 			for (let x = 0; x <= cols; x++) {
 				points[x][rows][0] = points[x][0][0];
-				points[x][rows][1] = points[x][0][1];
+				points[x][rows][1] = points[x][0][1]+totalHeight;
 			}
 		}
 	}
@@ -80,7 +81,7 @@ function draw() {
 		}
 	}
 	for (let colNo = 1; colNo <= cols; colNo++) {
-		for (let rowNo = 1; rowNo <= rows-1; rowNo++) {
+		for (let rowNo = 1; rowNo <= rows; rowNo++) {
 			drawColSubdivs(colNo, rowNo);
 			drawRowSubdivs(colNo, rowNo);
 		}
@@ -117,14 +118,17 @@ function draw() {
 			let lastY2 = points[colNo - 1][rowNo][1];
 			let deltaLastX = (lastX2 - lastX1) / subdivs;
 			let deltaLastY = (lastY2 - lastY1) / subdivs;
-
+			
 			let currentX1 = points[colNo][rowNo - 1][0];
 			let currentY1 = points[colNo][rowNo - 1][1];
 			let currentX2 = points[colNo][rowNo][0];
 			let currentY2 = points[colNo][rowNo][1];
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
-
+			
+			// console.log(points[colNo][rowNo - 1]);
+			// if (rowNo == rows)
+			// 	break;
 			pline(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
