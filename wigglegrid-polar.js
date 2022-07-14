@@ -10,12 +10,12 @@ function setup() {
 
 	randomSeed(3);
 
-	cols = 3;
+	cols = 8;
 	rows = 19;
 	wiggleR = 24;
 	wiggleT = .1;
-	subdivs = 25;
-	innerMargin = 60;
+	subdivs = 15;
+	innerMargin = 70;
 
 	cellWidth = (0.45*width-innerMargin)/cols;
 	cellHeight = Math.PI*2/rows;
@@ -34,12 +34,18 @@ function setup() {
 	//TODO: wiggle edges to the same points
 
 	function wiggle() {
-		for (let c = 1; c < cols; c++) {
+		for (let c = 0; c <= cols; c++) {
 			for (let r = 0; r < rows; r++) {
-				points[c][r][1] += random(-wiggleT,wiggleT);
-				points[c][r][0] += random(-wiggleR,wiggleR);
+				if (c==0 || c == cols) {
+					points[c][r][1] += random(-wiggleT,wiggleT);
+				}
+				else {
+					points[c][r][1] += random(-wiggleT,wiggleT);
+					points[c][r][0] += random(-wiggleR,wiggleR);
+				}
 			}
-			for (let x = 0; x < cols; x++) {
+			// marry the two "ends" of the matrix
+			for (let x = 0; x <= cols; x++) {
 				points[x][rows][0] = points[x][0][0];
 				points[x][rows][1] = points[x][0][1];
 			}
@@ -70,11 +76,13 @@ function draw() {
 					pline(currentX, currentY, points[colNo][rowNo + 1][0], points[colNo][rowNo + 1][1]);
 				}
 
-				if (colNo > 0 && rowNo > 0) {
-					// drawColSubdivs(colNo, rowNo);
-					// drawRowSubdivs(colNo, rowNo);
-				}
 			}
+		}
+	}
+	for (let colNo = 1; colNo <= cols; colNo++) {
+		for (let rowNo = 1; rowNo <= rows-1; rowNo++) {
+			drawColSubdivs(colNo, rowNo);
+			drawRowSubdivs(colNo, rowNo);
 		}
 	}
 
@@ -94,7 +102,7 @@ function draw() {
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
-			line(lastX1 + deltaLastX * subdiv,
+			pline(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
 				currentY1 + deltaCurrentY * subdiv);
@@ -117,7 +125,7 @@ function draw() {
 			let deltaCurrentX = (currentX2 - currentX1) / subdivs;
 			let deltaCurrentY = (currentY2 - currentY1) / subdivs;
 
-			line(lastX1 + deltaLastX * subdiv,
+			pline(lastX1 + deltaLastX * subdiv,
 				lastY1 + deltaLastY * subdiv,
 				currentX1 + deltaCurrentX * subdiv,
 				currentY1 + deltaCurrentY * subdiv);
