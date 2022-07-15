@@ -5,15 +5,15 @@ let points;
 let subdivs;
 
 function setup() {
-	createCanvas(1000, 1000, SVG); 
+	createCanvas(1000, 1000); 
 	//createCanvas(1000, 1414, SVG);// A3 paper size
 
-	randomSeed(3);
+	// randomSeed(3);
 
 	cols = 8;
 	rows = 19;
-	wiggleR = 28;
-	wiggleT = .18;
+	wiggleR = 22;
+	wiggleT = .185;
 	subdivs = 10;
 	innerMargin = 70;
 
