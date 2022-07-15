@@ -8,14 +8,14 @@ function setup() {
 	createCanvas(1000, 1000); 
 	//createCanvas(1000, 1414, SVG);// A3 paper size
 
-	// randomSeed(3);
+	randomSeed(3);
 
-	cols = 8;
+	cols = 10;
 	rows = 19;
-	wiggleR = 22;
+	wiggleR = 23;
 	wiggleT = .185;
 	subdivs = 10;
-	innerMargin = 70;
+	innerMargin = 60;
 
 	cellWidth = (0.48*width-innerMargin)/cols;
 	cellHeight = Math.PI*2/rows;
@@ -64,6 +64,7 @@ function draw() {
 	drawMainGrid();
 	for (let colNo = 1; colNo <= cols; colNo++) {
 		for (let rowNo = 1; rowNo <= rows; rowNo++) {
+			strokeWeight(1.0);
 			drawColSubdivs(colNo, rowNo);
 			drawRowSubdivs(colNo, rowNo);
 		}
@@ -76,18 +77,13 @@ function draw() {
 			for (let rowNo = 0; rowNo <= rows-1; rowNo++) {
 				currentX = points[colNo][rowNo][0];
 				currentY = points[colNo][rowNo][1];
+				strokeWeight(2.5);
 				if (colNo < cols) {
-					strokeWeight(2);
 					plinei(currentX, currentY, points[colNo + 1][rowNo][0], points[colNo + 1][rowNo][1]);
-					strokeWeight(1);
 				}
-
 				if (rowNo < rows) {
-					strokeWeight(2);
 					plinei(currentX, currentY, points[colNo][rowNo + 1][0], points[colNo][rowNo + 1][1]);
-					strokeWeight(1);
 				}
-
 			}
 		}
 	}
