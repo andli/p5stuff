@@ -15,7 +15,7 @@ function setup() {
   numLines = 80;
   anchorDistance = createVector(120, 80);
   noiseFactor = 0.005;
-  noiseScale = 0.3;
+  noiseScale = 1;
   anchorScale = 1.5; // how far to pull the bezier handles
 }
 
@@ -44,13 +44,10 @@ function draw() {
     let x3 = ax4 - anchorDistance.y * scaleControl;
     let y3 = ay4 - anchorDistance.x * scaleControl;
 
-    noiseVal1 = noise(ax1 * noiseFactor, ay1 * noiseFactor);
-    noiseVal2 = -noise(ax4 * noiseFactor, ay4 * noiseFactor);
-    console.log(noiseVal1, noiseVal2);
-    x2 = x2 + x2 * noiseScale * noiseVal1;
-    y2 = y2 + y2 * noiseScale * noiseVal1;
-    x3 = x3 + x3 * noiseScale * noiseVal2;
-    y3 = y3 + y3 * noiseScale * noiseVal2;
+    x2 = x2 * (1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
+    y2 = y2 * (1 + -noise(ay1 * noiseFactor) - 0.5 * noiseScale);
+    x3 = x3 * (1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
+    y3 = y3 * (1 + -noise(ay4 * noiseFactor) - 0.5 * noiseScale);
 
     if (l >= 0) {
       scaleControl = ((numLines - l) / numLines) * anchorScale;
@@ -63,12 +60,12 @@ function draw() {
       x3 = ax4 - anchorDistance.y * scaleControl;
       y3 = ay4 - anchorDistance.x * scaleControl;
 
-      noiseVal1 = noise(ax1 * noiseFactor, ay1 * noiseFactor);
-      noiseVal2 = -noise(ax4 * noiseFactor, ay4 * noiseFactor);
-      x2 = x2 + x2 * noiseScale * noiseVal1;
-      y2 = y2 + y2 * noiseScale * noiseVal1;
-      x3 = x3 + x3 * noiseScale * noiseVal2;
-      y3 = y3 + y3 * noiseScale * noiseVal2;
+      x2 = x2 * (1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
+      y2 = y2 * (1 + -noise(ay1 * noiseFactor) - 0.5 * noiseScale);
+      x3 = x3 * (1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
+      y3 = y3 * (1 + -noise(ay4 * noiseFactor) - 0.5 * noiseScale);
+      console.log(1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
+      console.log(1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
     }
 
     if (drawControlPoints) {
