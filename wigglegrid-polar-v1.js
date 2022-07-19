@@ -5,10 +5,10 @@ let points;
 let subdivs;
 
 function setup() {
-	createCanvas(1000, 1000); 
+	createCanvas(1000, 1000, SVG); 
 	//createCanvas(1000, 1414, SVG);// A3 paper size
 
-	randomSeed(3);
+	randomSeed(37);
 
 	cols = 10;
 	rows = 19;
@@ -70,14 +70,14 @@ function draw() {
 		}
 	}
 	
-	//save("out2.svg");
+	// save("out3.svg");
 
 	function drawMainGrid() {
 		for (let colNo = 0; colNo <= cols; colNo++) {
 			for (let rowNo = 0; rowNo <= rows-1; rowNo++) {
 				currentX = points[colNo][rowNo][0];
 				currentY = points[colNo][rowNo][1];
-				strokeWeight(2.5);
+				// strokeWeight(2.5);
 				if (colNo < cols) {
 					plinei(currentX, currentY, points[colNo + 1][rowNo][0], points[colNo + 1][rowNo][1]);
 				}
