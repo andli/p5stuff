@@ -14,8 +14,8 @@ function setup() {
   margin = 20;
   numLines = 300;
   anchorDistance = createVector(120, 80).mult(2);
-  noiseFactor = 0.02;
-  noiseScale = 200;
+  noiseFactor = 0.015;
+  noiseScale = 300;
 }
 
 function draw() {
@@ -24,7 +24,7 @@ function draw() {
   stroke(0);
   strokeWeight(1);
   noFill();
-  let drawControlPoints = false;
+  let drawControlPoints = true;
 
   // translate(width/2,height/2);
   rect(margin, margin, width - 2 * margin, height - 2 * margin);
@@ -62,9 +62,9 @@ function draw() {
 
     if (drawControlPoints) {
       strokeWeight(8);
-      stroke("blue");
-      point(a1.x, a1.y);
-      point(a2.x, a2.y);
+      //   stroke("blue");
+      //   point(a1.x, a1.y);
+      //   point(a2.x, a2.y);
       stroke("red");
       point(c1.x, c1.y);
       point(c2.x, c2.y);
