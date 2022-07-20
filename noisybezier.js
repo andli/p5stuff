@@ -35,51 +35,41 @@ function draw() {
     let noiseVal1;
     let noiseVal2;
     let scaleControl = ((numLines + l) / numLines) * anchorScale;
-    let ax1 = margin;
-    let ay1 = height - margin - (numLines + l) * step;
-    let ax4 = width - margin - step * -l;
-    let ay4 = height - margin;
-    let x2 = ax1 + anchorDistance.x * scaleControl;
-    let y2 = ay1 + anchorDistance.y * scaleControl;
-    let x3 = ax4 - anchorDistance.y * scaleControl;
-    let y3 = ay4 - anchorDistance.x * scaleControl;
-
-    x2 = x2 * (1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
-    y2 = y2 * (1 + -noise(ay1 * noiseFactor) - 0.5 * noiseScale);
-    x3 = x3 * (1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
-    y3 = y3 * (1 + -noise(ay4 * noiseFactor) - 0.5 * noiseScale);
+    let a1 = createVector(margin, height - margin - (numLines + l) * step);
+    let a2 = createVector(width - margin - step * -l, height - margin);
+    let c1 = createVector(
+      a1.x + anchorDistance.x * scaleControl,
+      a1.y + anchorDistance.y * scaleControl
+    );
+    let c2 = createVector(
+      a2.x - anchorDistance.y * scaleControl,
+      a2.y - anchorDistance.x * scaleControl
+    );
 
     if (l >= 0) {
       scaleControl = ((numLines - l) / numLines) * anchorScale;
-      ax1 = l * step + margin;
-      ay1 = margin;
-      ax4 = width - margin;
-      ay4 = height - l * step - margin;
-      x2 = ax1 + anchorDistance.x * scaleControl;
-      y2 = ay1 + anchorDistance.y * scaleControl;
-      x3 = ax4 - anchorDistance.y * scaleControl;
-      y3 = ay4 - anchorDistance.x * scaleControl;
-
-      x2 = x2 * (1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
-      y2 = y2 * (1 + -noise(ay1 * noiseFactor) - 0.5 * noiseScale);
-      x3 = x3 * (1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
-      y3 = y3 * (1 + -noise(ay4 * noiseFactor) - 0.5 * noiseScale);
-      console.log(1 + noise(ax1 * noiseFactor) - 0.5 * noiseScale);
-      console.log(1 + noise(ax4 * noiseFactor) - 0.5 * noiseScale);
+      a1.x = l * step + margin;
+      a1.y = margin;
+      a2.x = width - margin;
+      a2.y = height - l * step - margin;
+      c1.x = a1.x + anchorDistance.x * scaleControl;
+      c1.y = a1.y + anchorDistance.y * scaleControl;
+      c2.x = a2.x - anchorDistance.y * scaleControl;
+      c2.y = a2.y - anchorDistance.x * scaleControl;
     }
 
     if (drawControlPoints) {
       strokeWeight(8);
       stroke("blue");
-      point(ax1, ay1);
-      point(ax4, ay4);
+      point(a1.x, a1.y);
+      point(a2.x, a2.y);
       stroke("red");
-      point(x2, y2);
-      point(x3, y3);
+      point(c1.x, c1.y);
+      point(c2.x, c2.y);
       stroke(0);
       strokeWeight(1);
     }
 
-    bezier(ax1, ay1, x2, y2, x3, y3, ax4, ay4);
+    bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
   }
 }
