@@ -13,7 +13,7 @@ function setup() {
   noiseSeed(37);
   margin = 10;
   numLines = 300;
-  anchorDistance = createVector(120, 80).mult(2);
+  anchorDistance = createVector(120, 80).mult(1);
   noiseFactor = 0.015;
   noiseScale = 300;
 }
@@ -24,7 +24,7 @@ function draw() {
   stroke(0);
   strokeWeight(1);
   noFill();
-  let drawControlPoints = false;
+  let drawControlPoints = true;
 
   drawCurves();
   // save("noisybezier.svg");
@@ -45,37 +45,47 @@ function draw() {
         ad = anchorDistance.copy().mult(scaleControl);
 
         a1 = createVector(margin, height - margin - (numLines + l) * step);
-        a2 = createVector(width - margin - step * -l, height - margin);
+        a2 = createVector(
+          margin + ((numLines + l) * step) / 2,
+          height - (margin + ((numLines + l) * step) / 2)
+        );
+        console.log(a2);
+        //a2 = createVector(width - margin - step * -l, height - margin);
+
         c1 = a1.copy().add(ad);
         c2 = a2.copy().sub(ad);
-
         addNoise(c1, scaleControl);
         addNoise(c2, scaleControl);
+        bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
       } else if (l >= 0) {
         scaleControl = (numLines - l) / numLines;
         ad = anchorDistance.copy().mult(scaleControl);
+
         a1 = createVector(l * step + margin, margin);
-        a2 = createVector(width - margin, height - l * step - margin);
+        a2 = createVector(
+          margin + ((numLines + l) * step) / 2,
+          height - (margin + ((numLines + l) * step) / 2)
+        );
+        // a2 = createVector(width - margin, height - l * step - margin);
+
         c1 = a1.copy().add(ad);
         c2 = a2.copy().sub(ad);
-
         addNoise(c1, scaleControl);
         addNoise(c2, scaleControl);
+        bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
       }
 
       if (drawControlPoints) {
         strokeWeight(8);
-        //   stroke("blue");
-        //   point(a1.x, a1.y);
-        //   point(a2.x, a2.y);
-        stroke("red");
-        point(c1.x, c1.y);
-        point(c2.x, c2.y);
+        stroke("blue");
+        point(a1.x, a1.y);
+        point(a2.x, a2.y);
+        // stroke("red");
+        // point(c1.x, c1.y);
+        // point(c2.x, c2.y);
         stroke(0);
         strokeWeight(1);
       }
-
-      bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
     }
   }
 }
