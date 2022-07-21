@@ -7,10 +7,10 @@ let anchorDistance;
 let noiseFactor;
 
 function setup() {
-  createCanvas(1000, 1000);
+  createCanvas(1000, 1000, SVG);
   //createCanvas(1000, 1414, SVG);// A3 paper size
 
-  //   noiseSeed(37);
+  noiseSeed(37);
   margin = 20;
   numLines = 300;
   anchorDistance = createVector(120, 80).mult(2);
@@ -20,11 +20,11 @@ function setup() {
 
 function draw() {
   noLoop();
-  background(255);
+  // background(255);
   stroke(0);
   strokeWeight(1);
   noFill();
-  let drawControlPoints = true;
+  let drawControlPoints = false;
 
   // translate(width/2,height/2);
   rect(margin, margin, width - 2 * margin, height - 2 * margin);
@@ -74,6 +74,7 @@ function draw() {
 
     bezier(a1.x, a1.y, c1.x, c1.y, c2.x, c2.y, a2.x, a2.y);
   }
+  // save("noisybezier.svg");
 }
 
 function addNoise(controlVector, scaleControl) {
