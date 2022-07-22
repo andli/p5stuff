@@ -13,7 +13,7 @@ function setup() {
 
   noiseSeed(1);
   margin = 100;
-  numLines = 5;
+  numLines = 150;
 
   noiseFactor = 0.015;
   noiseScale = 230;
@@ -39,21 +39,20 @@ function draw() {
     let a2;
     let c1;
     let c2;
-    for (let l = -numLines; l <= numLines; l++) {
+    for (let l = 0; l <= numLines; l++) {
       let scaleControl;
-      if (l < 0) {
-        anchorDistance = createVector(80, 80).mult(2);
 
-        a1 = createVector(margin + (numLines + l) * step, margin); // bottom
-        a2 = createVector(margin + (numLines + l) * step, height - margin); // left
-        ad = anchorDistance.copy().mult((numLines + l) / (1 * numLines));
-        c1 = createVector(a1.x + ad.x, a1.y + ad.y);
-        ad = anchorDistance.copy().mult((numLines + l) / (1 * numLines));
-        c2 = createVector(a2.x - ad.x, a2.y - ad.y);
+      anchorDistance = createVector(1, 1).mult(500);
 
-        // addNoise(c1, scaleControl);
-        // addNoise(c2, scaleControl);
-      }
+      a1 = createVector(margin + l * step, margin); // bottom
+      a2 = createVector(margin + l * step, height - margin); // left
+      ad = anchorDistance.copy().mult((numLines - l) / numLines);
+      c1 = createVector(a1.x + ad.x, a1.y + ad.y);
+      ad = anchorDistance.copy().mult(l / numLines);
+      c2 = createVector(a2.x - ad.x, a2.y - ad.y);
+
+      addNoise(c1, scaleControl);
+      addNoise(c2, scaleControl);
 
       if (drawControlPoints) {
         strokeWeight(8);
