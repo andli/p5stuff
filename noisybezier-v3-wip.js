@@ -7,16 +7,16 @@ let anchorDistance;
 let noiseFactor;
 
 function setup() {
-  createCanvas(1000, 1000); //, SVG);
+  createCanvas(500, 500); //, SVG);
   // createCanvas(1000, 1000, SVG);
   //createCanvas(1000, 1414, SVG);// A3 paper size
 
   noiseSeed(1);
-  margin = 100;
+  margin = 50;
   numLines = 150;
 
-  noiseFactor = 0.015;
-  noiseScale = 230;
+  noiseFactor = 0.011;
+  noiseScale = 150;
 }
 
 function draw() {
