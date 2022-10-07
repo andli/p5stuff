@@ -3,7 +3,7 @@ let circles;
 let margin;
 let randomHash;
 
-const NUM_CIRCLES = 250;
+const NUM_CIRCLES = 1550;
 const CIRCLE_MARGIN = 4;
 const CIRCLE_MIN_RADIUS = 1;
 const CIRCLE_MAX_RADIUS = 22;
