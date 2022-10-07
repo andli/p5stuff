@@ -1,3 +1,4 @@
+const a3scalefactor = 1.414;
 let rows;
 let cols;
 let points;
@@ -13,7 +14,6 @@ function setup() {
   noiseSeed(seed);
   randomSeed(seed);
 
-  let a3scalefactor = 1.414;
   let canvasWidth = 500;
   //createCanvas(1000, 1414, SVG); // A3 paper size
   createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor)); // A3 paper size
