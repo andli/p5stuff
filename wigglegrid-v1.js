@@ -4,13 +4,16 @@ let points;
 let subdivs;
 
 function setup() {
-	createCanvas(1000, 1414, SVG); // A3 paper size
-	randomSeed(11);
+	let a3scalefactor = 1.414;
+	let canvasWidth = 500;
+	//createCanvas(1000, 1414, SVG); // A3 paper size
+	createCanvas(canvasWidth, Math.round(canvasWidth*a3scalefactor)); // A3 paper size
+	randomSeed(26);
 
 	cols = 5;
-	rows = 5;
-	wiggleDistance = 55;
-	subdivs = 3;
+	rows = 6;
+	wiggleDistance = 43;
+	subdivs = 32;
 
 	cellWidth = floor(width/cols);
 	cellHeight = floor(height/rows);
