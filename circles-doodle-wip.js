@@ -5,8 +5,10 @@ let randomHash;
 
 const NUM_CIRCLES = 1550;
 const CIRCLE_MARGIN = 4;
-const CIRCLE_MIN_RADIUS = 1;
-const CIRCLE_MAX_RADIUS = 22;
+const CIRCLE_MIN_RADIUS = 2;
+const CIRCLE_MAX_RADIUS = 42;
+const CIRCLE_FIRST_RADIUS = 82;
+const CIRCLE_FILTER_RADIUS = 12;
 
 function setup() {
   let params = getURLParams();
@@ -23,7 +25,7 @@ function setup() {
   createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor)); // A3 paper size
 
   // --- setup begins here ---
-  let radius = 25;
+  let radius = CIRCLE_FIRST_RADIUS;
   // circles = [[100, 100, 2 * radius]];
   circles = [[width / 2, height / 2, 2 * radius]];
 }
@@ -42,9 +44,14 @@ function draw() {
     while (placeCircleAroundCircle(circles[i], circles)) {}
   }
 
+
+
   // draw all circles
   for (let i = 0; i < circles.length; i++) {
-    circle(...circles[i]);
+    if (circles[i][2] < CIRCLE_MAX_RADIUS - CIRCLE_FILTER_RADIUS) {
+      circle(...circles[i]);
+
+    }
   }
 
   function createRelativeCircle(origin_circle, angle) {
@@ -55,7 +62,7 @@ function draw() {
     let distance = origin_circle[2] / 2 + CIRCLE_MARGIN + r;
     let x = Math.round(origin_circle[0] + distance * Math.cos(angle));
     let y = Math.round(origin_circle[1] + distance * Math.sin(angle));
-    return [x, y, 2 * r];
+    return [x, y, r];
   }
 
   function placeCircleAroundCircle(origin_circle, circles_array) {
