@@ -1,9 +1,10 @@
 const a3scalefactor = 1.414;
+const RENDER_SVG = false;
 let circles;
 let margin;
 let randomHash;
 
-const NUM_CIRCLES = 1550;
+const NUM_CIRCLES = 250;
 const CIRCLE_MARGIN = 4;
 const CIRCLE_MIN_RADIUS = 2;
 const CIRCLE_MAX_RADIUS = 42;
@@ -21,12 +22,14 @@ function setup() {
   randomSeed(seed);
 
   let canvasWidth = 1000;
-  //createCanvas(1000, 1414, SVG); // A3 paper size
-  createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor)); // A3 paper size
+  if (RENDER_SVG) {
+    createCanvas(1000, 1414, SVG);
+  } else {
+    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor));
+  }
 
   // --- setup begins here ---
   let radius = CIRCLE_FIRST_RADIUS;
-  // circles = [[100, 100, 2 * radius]];
   circles = [[width / 2, height / 2, 2 * radius]];
 }
 
@@ -44,14 +47,15 @@ function draw() {
     while (placeCircleAroundCircle(circles[i], circles)) {}
   }
 
-
-
   // draw all circles
   for (let i = 0; i < circles.length; i++) {
     if (circles[i][2] < CIRCLE_MAX_RADIUS - CIRCLE_FILTER_RADIUS) {
       circle(...circles[i]);
-
     }
+  }
+
+  if (RENDER_SVG) {
+    save("out.svg");
   }
 
   function createRelativeCircle(origin_circle, angle) {
@@ -104,8 +108,6 @@ function draw() {
 
     return xLeft > rLeft && xRight < rWidth && yTop > rTop && yBottom < rHeight;
   }
-
-  //save("out.svg");
 }
 
 class Random {
