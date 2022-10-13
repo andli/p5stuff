@@ -4,7 +4,7 @@ let circles;
 let margin;
 let randomHash;
 
-const NUM_CIRCLES = 250;
+const NUM_CIRCLES = 350;
 const CIRCLE_MARGIN = 4;
 const CIRCLE_MIN_RADIUS = 2;
 const CIRCLE_MAX_RADIUS = 42;
@@ -44,7 +44,7 @@ function draw() {
 
   for (let i = 0; i < NUM_CIRCLES; i++) {
     // place circles until full around one circle
-    while (placeCircleAroundCircle(circles[i], circles)) {}
+    while (placeCircleAroundCircle(circles[i], circles, i / NUM_CIRCLES)) {}
   }
 
   // draw all circles
@@ -58,23 +58,28 @@ function draw() {
     save("out.svg");
   }
 
-  function createRelativeCircle(origin_circle, angle) {
+  function createRelativeCircle(originCircle, angle, progressValue) {
     if (angle == undefined) {
       angle = random(360);
     }
-    let r = random(CIRCLE_MIN_RADIUS, CIRCLE_MAX_RADIUS);
-    let distance = origin_circle[2] / 2 + CIRCLE_MARGIN + r;
-    let x = Math.round(origin_circle[0] + distance * Math.cos(angle));
-    let y = Math.round(origin_circle[1] + distance * Math.sin(angle));
+    if (progressValue == undefined || progressValue == 0) {
+      progressValue = 1;
+    }
+    let adjustedMaxRadius =
+      CIRCLE_MAX_RADIUS * (progressValue + CIRCLE_MIN_RADIUS);
+    let r = random(CIRCLE_MIN_RADIUS, adjustedMaxRadius);
+    let distance = originCircle[2] / 2 + CIRCLE_MARGIN + r;
+    let x = Math.round(originCircle[0] + distance * Math.cos(angle));
+    let y = Math.round(originCircle[1] + distance * Math.sin(angle));
     return [x, y, r];
   }
 
-  function placeCircleAroundCircle(origin_circle, circles_array) {
+  function placeCircleAroundCircle(originCircle, circles_array, progressValue) {
     let angle = random(360);
-    let c_tmp = createRelativeCircle(origin_circle, angle);
+    let c_tmp = createRelativeCircle(originCircle, angle, progressValue);
 
     for (let a = angle; a < angle + 360; a++) {
-      c_tmp = createRelativeCircle(origin_circle, a);
+      c_tmp = createRelativeCircle(originCircle, a, progressValue);
       if (circleWithinRect(c_tmp, [0, 0, width, height])) {
         if (!circles_array.some((m) => circlesOverlap(m, c_tmp))) {
           circles_array.push(c_tmp);
