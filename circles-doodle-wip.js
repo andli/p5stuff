@@ -4,12 +4,12 @@ let circles;
 let margin;
 let randomHash;
 
-const NUM_CIRCLES = 350;
-const CIRCLE_MARGIN = 4;
+const NUM_CIRCLES = 600;
+const CIRCLE_MARGIN = 3;
 const CIRCLE_MIN_RADIUS = 2;
 const CIRCLE_MAX_RADIUS = 42;
 const CIRCLE_FIRST_RADIUS = 82;
-const CIRCLE_FILTER_RADIUS = 12;
+const CIRCLE_FILTER_RADIUS = 2;
 
 function setup() {
   let params = getURLParams();
