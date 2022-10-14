@@ -8,7 +8,7 @@ const NUM_CIRCLES = 900;
 const CIRCLE_MARGIN = 3;
 const CIRCLE_MIN_RADIUS = 5;
 const CIRCLE_MAX_RADIUS = 91;
-const CIRCLE_FIRST_RADIUS = 121;
+const CIRCLE_FIRST_RADIUS = 101;
 const CIRCLE_FILTER_RADIUS = 45;
 
 function setup() {

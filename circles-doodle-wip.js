@@ -1,15 +1,15 @@
 const a3scalefactor = 1.414;
-const RENDER_SVG = false;
+const RENDER_SVG = true;
 let circles;
 let margin;
 let randomHash;
 
-const NUM_CIRCLES = 600;
+const NUM_CIRCLES = 850;
 const CIRCLE_MARGIN = 3;
-const CIRCLE_MIN_RADIUS = 2;
-const CIRCLE_MAX_RADIUS = 42;
-const CIRCLE_FIRST_RADIUS = 82;
-const CIRCLE_FILTER_RADIUS = 2;
+const CIRCLE_MIN_RADIUS = 3;
+const CIRCLE_MAX_RADIUS = 25;
+const CIRCLE_FIRST_RADIUS = 92;
+const CIRCLE_FILTER_RADIUS = 5;
 
 function setup() {
   let params = getURLParams();
@@ -55,7 +55,7 @@ function draw() {
   }
 
   if (RENDER_SVG) {
-    save("out.svg");
+    save("hedblom.svg");
   }
 
   function createRelativeCircle(originCircle, angle, progressValue) {
