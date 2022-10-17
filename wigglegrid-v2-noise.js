@@ -25,10 +25,11 @@ function setup() {
   }
 
   MARGIN = 40;
-  COLS = 11;
-  ROWS = 17;
+  COLS = 7;
+  ROWS = 12;
   WIGGLEDISTANCE = 43;
-  SUBDIVS = 26;
+  NOISEFACTOR = 120;
+  SUBDIVS = 32;
   FLATTEN_EDGES = false;
 
   cellWidth = floor((width - 2 * MARGIN) / COLS);
@@ -48,9 +49,9 @@ function setup() {
     for (let y = 0; y <= ROWS; y++) {
       if (!FLATTEN_EDGES) {
         points[x][y][0] +=
-          (noise(points[x][y][0], points[x][y][1]) - 0.5) * 100;
+          (noise(points[x][y][0], points[x][y][1]) - 0.5) * NOISEFACTOR;
         points[x][y][1] +=
-          (noise(points[x][y][0], points[x][y][1]) - 0.5) * 100;
+          (noise(points[x][y][0], points[x][y][1]) - 0.5) * NOISEFACTOR;
       } else {
         if (x == 0 || x == COLS) {
           if (y != 0 && y != ROWS) {
@@ -181,17 +182,16 @@ function draw() {
 
 class Random {
   constructor(hash) {
+    let result = "0x";
     if (hash == undefined) {
       let chars = "0123456789abcdef";
-      let result = "0x";
       for (let i = 64; i > 0; --i)
         result += chars[Math.floor(Math.random() * chars.length)];
       print("random hash result: " + result);
-
-      this.seed = parseInt(result.slice(0, 16), 16);
     } else {
-      this.seed = parseInt(hash.slice(0, 16), 16);
+      result = hash;
     }
+    this.seed = parseInt(result.slice(0, 16), 16);
   }
   random_dec() {
     this.seed ^= this.seed << 13;
