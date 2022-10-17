@@ -1,6 +1,11 @@
-const a3scalefactor = 1.414;
+const A3SCALE = 1.414;
+const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
+
+function localSetup() {}
+
+function localDraw() {}
 
 function setup() {
   let params = getURLParams();
@@ -12,14 +17,13 @@ function setup() {
   noiseSeed(seed);
   randomSeed(seed);
 
-  let canvasWidth = 1000;
   if (RENDER_SVG) {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor), SVG);
+    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE), SVG);
   } else {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor));
+    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE));
   }
 
-  // --- setup begins here ---
+  localSetup();
 }
 
 function draw() {
@@ -29,7 +33,7 @@ function draw() {
   strokeWeight(1);
   noFill();
 
-  // --- drawing logic here ---
+  localDraw();
 
   if (RENDER_SVG) {
     save("out.svg");

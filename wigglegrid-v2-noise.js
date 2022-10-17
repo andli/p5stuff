@@ -1,4 +1,5 @@
-const a3scalefactor = 1.414;
+const A3SCALE = 1.414;
+const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
 let rows;
@@ -6,24 +7,7 @@ let cols;
 let points;
 let subdivs;
 
-function setup() {
-  let params = getURLParams();
-  if (params.hash != undefined) {
-    print(params.hash);
-    randomHash = new Random(params.hash);
-    randomizedHashString = params.hash;
-  } else randomHash = new Random();
-  seed = round(randomHash.random_dec() * 1000000000);
-  noiseSeed(seed);
-  randomSeed(seed);
-
-  let canvasWidth = 1000;
-  if (RENDER_SVG) {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor), SVG);
-  } else {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor));
-  }
-
+function localSetup() {
   MARGIN = 40;
   COLS = 7;
   ROWS = 12;
@@ -86,17 +70,8 @@ function setup() {
   }
 }
 
-function draw() {
-  noLoop();
-  background(255);
-  stroke(0);
-  strokeWeight(1.2);
-  noFill();
+function localDraw() {
   drawMainGrid();
-
-  if (RENDER_SVG) {
-    save("out.svg");
-  }
 
   function drawMainGrid() {
     for (let colNo = 0; colNo <= COLS; colNo++) {
@@ -177,6 +152,40 @@ function draw() {
         currentY1 + deltaCurrentY * subdiv
       );
     }
+  }
+}
+
+function setup() {
+  let params = getURLParams();
+  if (params.hash != undefined) {
+    print(params.hash);
+    randomHash = new Random(params.hash);
+    randomizedHashString = params.hash;
+  } else randomHash = new Random();
+  seed = round(randomHash.random_dec() * 1000000000);
+  noiseSeed(seed);
+  randomSeed(seed);
+
+  if (RENDER_SVG) {
+    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE), SVG);
+  } else {
+    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE));
+  }
+
+  localSetup();
+}
+
+function draw() {
+  noLoop();
+  background(255);
+  stroke(0);
+  strokeWeight(1.2);
+  noFill();
+
+  localDraw();
+
+  if (RENDER_SVG) {
+    save("out.svg");
   }
 }
 
