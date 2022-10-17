@@ -1,4 +1,6 @@
 const a3scalefactor = 1.414;
+const RENDER_SVG = false;
+let randomHash;
 
 function setup() {
   let params = getURLParams();
@@ -10,9 +12,12 @@ function setup() {
   noiseSeed(seed);
   randomSeed(seed);
 
-  let canvasWidth = 500;
-  //createCanvas(1000, 1414, SVG); // A3 paper size
-  createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor)); // A3 paper size
+  let canvasWidth = 1000;
+  if (RENDER_SVG) {
+    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor), SVG);
+  } else {
+    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor));
+  }
 
   // --- setup begins here ---
 }
@@ -26,7 +31,9 @@ function draw() {
 
   // --- drawing logic here ---
 
-  //save("out.svg");
+  if (RENDER_SVG) {
+    save("out.svg");
+  }
 }
 
 class Random {
