@@ -3,9 +3,13 @@ const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
 
-function localSetup() {}
+function localSetup() {
+  // your setup code goes here
+}
 
-function localDraw() {}
+function localDraw() {
+  // your drawing code goes here
+}
 
 function setup() {
   let params = getURLParams();
