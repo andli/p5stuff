@@ -1,5 +1,5 @@
-let rows;
-let cols;
+let ROWS;
+let COLS;
 let margin;
 let points;
 let numLines;

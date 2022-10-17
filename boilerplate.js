@@ -37,14 +37,18 @@ function draw() {
 }
 
 class Random {
-  constructor() {
-    let chars = "0123456789abcdef";
-    let result = "0x";
-    for (let i = 64; i > 0; --i)
-      result += chars[Math.floor(Math.random() * chars.length)];
-    print("random hash result: " + result);
+  constructor(hash) {
+    if (hash == undefined) {
+      let chars = "0123456789abcdef";
+      let result = "0x";
+      for (let i = 64; i > 0; --i)
+        result += chars[Math.floor(Math.random() * chars.length)];
+      print("random hash result: " + result);
 
-    this.seed = parseInt(result.slice(0, 16), 16);
+      this.seed = parseInt(result.slice(0, 16), 16);
+    } else {
+      this.seed = parseInt(hash.slice(0, 16), 16);
+    }
   }
   random_dec() {
     this.seed ^= this.seed << 13;

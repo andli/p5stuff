@@ -1,34 +1,19 @@
-const a3scalefactor = 1.414;
-const RENDER_SVG = false;
-let randomHash;
 let rows;
 let cols;
 let points;
 let subdivs;
 
 function setup() {
-  let params = getURLParams();
-  if (params.hash != undefined) {
-    print(params.hash);
-    randomHash = new Random(params.hash);
-    randomizedHashString = params.hash;
-  } else randomHash = new Random();
-  seed = round(randomHash.random_dec() * 1000000000);
-  noiseSeed(seed);
-  randomSeed(seed);
+  let a3scalefactor = 1.414;
+  let canvasWidth = 500;
+  //createCanvas(1000, 1414, SVG); // A3 paper size
+  createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor)); // A3 paper size
+  randomSeed(26);
 
-  let canvasWidth = 1000;
-  if (RENDER_SVG) {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor), SVG);
-  } else {
-    createCanvas(canvasWidth, Math.round(canvasWidth * a3scalefactor));
-  }
-
-  COLS = 11;
-  ROWS = 17;
-  WIGGLEDISTANCE = 43;
-  SUBDIVS = 26;
-  FLATTEN_EDGES = false;
+  COLS = 5;
+  ROWS = 6;
+  wiggleDistance = 43;
+  SUBDIVS = 32;
 
   cellWidth = floor(width / COLS);
   cellHeight = floor(height / ROWS);
@@ -45,44 +30,21 @@ function setup() {
   // wiggle points
   for (let x = 0; x <= COLS; x++) {
     for (let y = 0; y <= ROWS; y++) {
-      if (!FLATTEN_EDGES) {
-        points[x][y][0] += randomHash.random_between(
-          -WIGGLEDISTANCE,
-          WIGGLEDISTANCE
-        );
-        points[x][y][1] += randomHash.random_between(
-          -WIGGLEDISTANCE,
-          WIGGLEDISTANCE
-        );
+      if (x == 0 || x == COLS) {
+        if (y != 0 && y != ROWS) {
+          // only wiggle edge points along the edge
+          points[x][y][1] += random(-wiggleDistance, wiggleDistance);
+        }
       } else {
-        if (x == 0 || x == COLS) {
-          if (y != 0 && y != ROWS) {
-            // only wiggle edge points along the edge
-            points[x][y][1] += randomHash.random_between(
-              -WIGGLEDISTANCE,
-              WIGGLEDISTANCE
-            );
-          }
-        } else {
-          points[x][y][0] += randomHash.random_between(
-            -WIGGLEDISTANCE,
-            WIGGLEDISTANCE
-          );
+        points[x][y][0] += random(-wiggleDistance, wiggleDistance);
+      }
+      if (y == 0 || y == ROWS) {
+        if (x != 0 && x != COLS) {
+          // only wiggle edge points along the edge
+          points[x][y][0] += random(-wiggleDistance, wiggleDistance);
         }
-        if (y == 0 || y == ROWS) {
-          if (x != 0 && x != COLS && FLATTEN_EDGES) {
-            // only wiggle edge points along the edge
-            points[x][y][0] += randomHash.random_between(
-              -WIGGLEDISTANCE,
-              WIGGLEDISTANCE
-            );
-          }
-        } else {
-          points[x][y][1] += randomHash.random_between(
-            -WIGGLEDISTANCE,
-            WIGGLEDISTANCE
-          );
-        }
+      } else {
+        points[x][y][1] += random(-wiggleDistance, wiggleDistance);
       }
     }
   }
@@ -92,13 +54,11 @@ function draw() {
   noLoop();
   background(255);
   stroke(0);
-  strokeWeight(1.2);
+  strokeWeight(0.8);
   noFill();
   drawMainGrid();
 
-  if (RENDER_SVG) {
-    save("out.svg");
-  }
+  //save("out.svg");
 
   function drawMainGrid() {
     for (let colNo = 0; colNo <= COLS; colNo++) {
@@ -179,36 +139,5 @@ function draw() {
         currentY1 + deltaCurrentY * subdiv
       );
     }
-  }
-}
-
-class Random {
-  constructor(hash) {
-    if (hash == undefined) {
-      let chars = "0123456789abcdef";
-      let result = "0x";
-      for (let i = 64; i > 0; --i)
-        result += chars[Math.floor(Math.random() * chars.length)];
-      print("random hash result: " + result);
-
-      this.seed = parseInt(result.slice(0, 16), 16);
-    } else {
-      this.seed = parseInt(hash.slice(0, 16), 16);
-    }
-  }
-  random_dec() {
-    this.seed ^= this.seed << 13;
-    this.seed ^= this.seed >> 17;
-    this.seed ^= this.seed << 5;
-    return ((this.seed < 0 ? ~this.seed + 1 : this.seed) % 1000) / 1000;
-  }
-  random_between(a, b) {
-    return a + (b - a) * this.random_dec();
-  }
-  random_int(a, b) {
-    return Math.floor(this.random_between(a, b + 1));
-  }
-  random_choice(x) {
-    return x[Math.floor(this.random_between(0, x.length * 0.99))];
   }
 }
