@@ -1,7 +1,9 @@
 const A3SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
-const RENDER_SVG = false;
+const RENDER_SVG = true;
 let randomHash;
+
+const NOISEFACTOR_ROT = 0.2;
 
 function localSetup() {
   // your setup code goes here
@@ -12,60 +14,56 @@ function localDraw() {
   stroke(0);
   background(255);
   noFill();
-  strokeWeight(4);
+  strokeWeight(2);
   //   bezier(10, 190, 10, 80, 90, 130, 90, 10);
-  drawHeart(150, 160, 1);
-  drawHeart(250, 300, 0.5);
+  const MARGIN = 25;
+  const PADDING = 40;
+  const ROWS = 20;
+  const COLS = 13;
+  const SIZE = 1.1;
+  let hearts = [];
+  for (x = 0; x < COLS; x++) {
+    for (y = 0; y < ROWS; y++) {
+      hearts.push([
+        x * PADDING + MARGIN,
+        y * PADDING + MARGIN,
+        noise(x, y) * NOISEFACTOR_ROT,
+      ]);
+    }
+  }
+  for (x = 0; x < COLS * ROWS; x++) {
+    drawHeart(hearts[x][0], hearts[x][1], SIZE, hearts[x][2]);
+  }
 }
 
-function drawHeart(cx, cy, size) {
-  let heartFoldTopY = cy - 55 * size;
-  let heartTipY = cy + 160 * size;
+function drawHeart(cx, cy, size, noiseVal) {
+  const R = 2.5;
+  let c = createVector(cx, cy);
+  let p1 = createVector(0, -5.5);
+  let p4 = createVector(0, 16.0);
+  let cp1 = createVector(-5.0 + random(-R, R), -13.0 + random(-R, R));
+  let cp2 = createVector(-14.0 + random(-R, R), -11.0 + random(-R, R));
+  let p2 = createVector(cp2.x, -2.0);
+  let cp3 = createVector(cp2.x + random(-R, R), 5.0 + random(-R, R));
+  let cp4 = createVector(-4.0 + random(-R, R), p4.y - 3.0 + random(-R, R));
+  let cp5 = createVector(4.0 + random(-R, R), p4.y - 3.0 + random(-R, R));
+  let cp6 = createVector(14.0 + random(-R, R), 5.0 + random(-R, R));
+  let p3 = createVector(cp6.x + random(-R, R), -2.0 + random(-R, R));
+  let cp7 = createVector(14.0 + random(-R, R), -11.0 + random(-R, R));
+  let cp8 = createVector(5.0 + random(-R, R), -13.0 + random(-R, R));
 
-  //TODO: change to vectors for better math
-  let cp1x = cx - 50 * size;
-  let cp1y = cy - 130 * size;
-  let cp2x = cx - 140 * size;
-  let cp2y = cy - 110 * size;
-  let p2x = cp2x;
-  let p2y = cy - 20 * size;
-  let cp3x = cp2x;
-  let cp3y = cy + 50 * size;
-  let cp4x = cx - 40 * size;
-  let cp4y = heartTipY - 30 * size;
-  let cp5x = cx + 40 * size;
-  let cp5y = heartTipY - 30 * size;
-  let cp6x = cx + 140 * size;
-  let cp6y = cy + 50 * size;
-  let p7x = cp6x;
-  let p7y = cy - 20 * size;
-  let cp8x = cx + 140 * size;
-  let cp8y = cy - 110 * size;
-  let cp9x = cx + 50 * size;
-  let cp9y = cy - 130 * size;
-
+  push();
+  translate(c);
+  rotate(noiseVal * 2 * Math.PI);
+  scale(size);
   beginShape();
-  vertex(cx, heartFoldTopY);
-  cp(cp1x, cp1y);
-  cp(cp2x, cp2y);
-  bezierVertex(cp1x, cp1y, cp2x, cp2y, p2x, p2y);
-  cp(cp3x, cp3y);
-  cp(cp4x, cp4y);
-  bezierVertex(cp3x, cp3y, cp4x, cp4y, cx, heartTipY);
-  cp(cp5x, cp5y);
-  cp(cp6x, cp6y);
-  bezierVertex(cp5x, cp5y, cp6x, cp6y, p7x, p7y);
-  cp(cp8x, cp8y);
-  cp(190, 30);
-  bezierVertex(cp8x, cp8y, cp9x, cp9y, cx, heartFoldTopY);
+  vertex(p1.x, p1.y);
+  bezierVertex(cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y);
+  bezierVertex(cp3.x, cp3.y, cp4.x, cp4.y, p1.x, p4.y);
+  bezierVertex(cp5.x, cp5.y, cp6.x, cp6.y, p3.x, p3.y);
+  bezierVertex(cp7.x, cp7.y, cp8.x, cp8.y, p1.x, p1.y);
   endShape();
-  function cp(x, y) {
-    strokeWeight(14);
-    stroke(160, 0, 0);
-    point(x, y);
-    stroke(0);
-    strokeWeight(4);
-  }
+  pop();
 }
 
 function setup() {
