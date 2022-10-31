@@ -36,17 +36,17 @@ function localDraw() {
       let cp1x = ci.x - ci.r - CP_MARGIN;
       let cp1y = currentLineHeight;
       let cp2x = ci.x - ci.r - CP_MARGIN;
-      let cp2y = currentLineHeight - ci.r - CP_MARGIN;
+      let cp2y = currentLineHeight - ci.r;
       let cp3x = ci.x;
-      let cp3y = ci.y - ci.r;
+      let cp3y = ci.y - ci.r - LINE_MARGIN + (currentLineHeight - ci.y);
 
       push(); // Start a new drawing state
       strokeWeight(10);
       stroke("red");
       point(cp1x, cp1y);
-      stroke("blue");
+      stroke("purple");
       point(cp2x, cp2y);
-      stroke("green");
+      stroke("blue");
       point(cp3x, cp3y);
       pop();
 
