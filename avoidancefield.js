@@ -33,17 +33,26 @@ function localDraw() {
       let ci = circles.find(
         (c) => currentLineHeight > c.y - c.r && currentLineHeight < c.y + c.r
       );
-      print(ci);
+      let cp1x = ci.x - ci.r - CP_MARGIN;
+      let cp1y = currentLineHeight;
+      let cp2x = ci.x - ci.r - CP_MARGIN;
+      let cp2y = currentLineHeight - ci.r - CP_MARGIN;
+      let cp3x = ci.x;
+      let cp3y = ci.y - ci.r;
+
+      push(); // Start a new drawing state
+      strokeWeight(10);
+      stroke("red");
+      point(cp1x, cp1y);
+      stroke("blue");
+      point(cp2x, cp2y);
+      stroke("green");
+      point(cp3x, cp3y);
+      pop();
+
       beginShape();
       vertex(0, currentLineHeight);
-      bezierVertex(
-        ci.x - ci.r - CP_MARGIN,
-        currentLineHeight,
-        ci.x - ci.r - CP_MARGIN,
-        currentLineHeight - ci.r - CP_MARGIN,
-        ci.x,
-        ci.y - ci.r
-      );
+      bezierVertex(cp1x, cp1y, cp2x, cp2y, cp3x, cp3y);
       bezierVertex(
         ci.x + ci.r + CP_MARGIN,
         ci.y - ci.r,
