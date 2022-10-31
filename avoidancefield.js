@@ -4,9 +4,9 @@ const RENDER_SVG = false;
 let randomHash;
 
 let circles = [];
-const NUMLINES = 15;
-const CP_MARGIN = 20;
-const LINE_BACKOFF = 50;
+const NUMLINES = 145;
+const CP_MARGIN = 0;
+const LINE_BACKOFF = 70;
 const LINE_MARGIN = 5;
 let lineDist;
 
@@ -28,51 +28,59 @@ function localDraw() {
   while (currentLineHeight < height) {
     if (
       circles.some(
-        (c) => currentLineHeight > c.y - c.r && currentLineHeight < c.y + c.r
+        (c) =>
+          currentLineHeight > c.y - (c.r + 6 * LINE_MARGIN) &&
+          currentLineHeight < c.y + (c.r + 6 * LINE_MARGIN)
       )
     ) {
       let ci = circles.find(
-        (c) => currentLineHeight > c.y - c.r && currentLineHeight < c.y + c.r
+        (c) =>
+          currentLineHeight > c.y - (c.r + 6 * LINE_MARGIN) &&
+          currentLineHeight < c.y + (c.r + 6 * LINE_MARGIN)
       );
+      let r = ci.r + 6 * LINE_MARGIN;
+      let dirMod = 1;
       if (currentLineHeight < ci.y) {
-        let cp1x = ci.x - ci.r - CP_MARGIN;
-        let cp1y = currentLineHeight;
-        let cp2x = ci.x - ci.r - CP_MARGIN;
-        let cp2y = currentLineHeight - ci.r;
-        let p3x = ci.x;
-        let p3y = ci.y - ci.r - LINE_MARGIN + (currentLineHeight - ci.y);
-
-        let cp4x = ci.x + ci.r + CP_MARGIN;
-        let cp4y = currentLineHeight - ci.r;
-        let cp5x = ci.x + ci.r + CP_MARGIN;
-        let cp5y = currentLineHeight - LINE_MARGIN;
-        let p6x = ci.x + ci.r + CP_MARGIN + LINE_BACKOFF;
-        let p6y = currentLineHeight;
-
-        push(); // Start a new drawing state
-        strokeWeight(10);
-        stroke("red");
-        point(cp1x, cp1y);
-        stroke("purple");
-        point(cp2x, cp2y);
-        stroke("blue");
-        point(p3x, p3y);
-        stroke("green");
-        point(cp4x, cp4y);
-        stroke("brown");
-        point(cp5x, cp5y);
-        stroke("orange");
-        point(p6x, p6y);
-        pop();
-
-        beginShape();
-        vertex(0, currentLineHeight);
-        vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
-        bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
-        bezierVertex(cp4x, cp4y, cp5x, cp5y, p6x, p6y);
-        vertex(width, currentLineHeight);
-        endShape();
+        dirMod = -1;
       }
+      let cp1x = ci.x - ci.r - CP_MARGIN;
+      let cp1y = currentLineHeight;
+      let cp2x = ci.x - ci.r - CP_MARGIN;
+      let cp2y = ci.y + dirMod * ci.r;
+      let p3x = ci.x;
+      let distFromCenter = Math.abs(ci.y - currentLineHeight);
+      let p3y = ci.y + dirMod * (r + LINE_MARGIN - distFromCenter);
+
+      let cp4x = ci.x + ci.r + CP_MARGIN;
+      let cp4y = ci.y + dirMod * ci.r;
+      let cp5x = ci.x + ci.r + CP_MARGIN;
+      let cp5y = currentLineHeight - LINE_MARGIN;
+      let p6x = ci.x + ci.r + CP_MARGIN + LINE_BACKOFF;
+      let p6y = currentLineHeight;
+
+      push(); // Start a new drawing state
+      strokeWeight(10);
+      stroke("red");
+      point(cp1x, cp1y);
+      stroke("purple");
+      point(cp2x, cp2y);
+      stroke("blue");
+      point(p3x, p3y);
+      stroke("green");
+      point(cp4x, cp4y);
+      stroke("brown");
+      point(cp5x, cp5y);
+      stroke("orange");
+      point(p6x, p6y);
+      pop();
+
+      beginShape();
+      vertex(0, currentLineHeight);
+      vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
+      bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
+      bezierVertex(cp4x, cp4y, cp5x, cp5y, p6x, p6y);
+      vertex(width, currentLineHeight);
+      endShape();
     } else {
       line(0, currentLineHeight, width, currentLineHeight);
     }
