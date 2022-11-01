@@ -32,7 +32,8 @@ function localDraw() {
 
 function drawLine(currentLineHeight, ci, circles) {
   //TODO: check intersections to add points
-  let pointsList = [];
+  circles.sort((a, b) => a.x - b.x); // sort circles in order of x pos
+  // let otherCircles = circles.filter((item) => item != ci);
 
   let dirMod = 1;
   if (currentLineHeight < ci.y) {
@@ -71,11 +72,24 @@ function drawLine(currentLineHeight, ci, circles) {
     pop();
   }
   beginShape();
-  vertex(0, currentLineHeight);
-  vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
-  bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
-  bezierVertex(cp4x, cp4y, cp5x, cp5y, p6x, p6y);
-  vertex(width, currentLineHeight);
+  vertex(0, currentLineHeight); // line start
+
+  let i = 0;
+  while (i < circles.length) {
+    print(circles[i] === ci);
+    if (circles[i] === ci) {
+      vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
+      bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
+      bezierVertex(cp4x, cp4y, cp5x, cp5y, p6x, p6y);
+      i++;
+      continue;
+    } else {
+    }
+    point(circles[i].x, circles[i].y);
+    i++;
+  }
+
+  vertex(width, currentLineHeight); // line end
   endShape();
 }
 
