@@ -76,7 +76,6 @@ function drawLine(currentLineHeight, ci, circles) {
 
   let i = 0;
   while (i < circles.length) {
-    print(circles[i] === ci);
     if (circles[i] === ci) {
       vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
       bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
@@ -84,6 +83,14 @@ function drawLine(currentLineHeight, ci, circles) {
       i++;
       continue;
     } else {
+      bezierVertex(
+        circles[i].x - 20,
+        currentLineHeight,
+        circles[i].x + 20,
+        currentLineHeight,
+        circles[i].x,
+        currentLineHeight
+      );
     }
     point(circles[i].x, circles[i].y);
     i++;
