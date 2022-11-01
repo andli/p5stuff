@@ -83,14 +83,21 @@ function drawLine(currentLineHeight, ci, circles) {
       i++;
       continue;
     } else {
-      bezierVertex(
-        circles[i].x - 20,
-        currentLineHeight,
-        circles[i].x + 20,
-        currentLineHeight,
-        circles[i].x,
-        currentLineHeight
-      );
+      if (circles[i].x < ci.x - ci.r || circles[i].x > ci.x + ci.r) {
+        bezierVertex(
+          circles[i].x - 20,
+          currentLineHeight,
+          circles[i].x + 20,
+          currentLineHeight,
+          circles[i].x,
+          currentLineHeight
+        );
+        push(); // draw control points
+        strokeWeight(10);
+        stroke("red");
+        point(circles[i].x, currentLineHeight);
+        pop();
+      }
     }
     point(circles[i].x, circles[i].y);
     i++;
