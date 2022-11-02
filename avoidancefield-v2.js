@@ -33,7 +33,6 @@ function localDraw() {
 function drawLine(currentLineHeight, ci, circles) {
   //TODO: check intersections to add points
   circles.sort((a, b) => a.x - b.x); // sort circles in order of x pos
-  // let otherCircles = circles.filter((item) => item != ci);
 
   let dirMod = 1;
   if (currentLineHeight < ci.y) {
@@ -78,25 +77,13 @@ function drawLine(currentLineHeight, ci, circles) {
   while (i < circles.length) {
     if (circles[i] === ci) {
       vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
-      bezierVertex(cp1x, cp1y, cp2x, cp2y, p3x, p3y);
-      bezierVertex(cp4x, cp4y, cp5x, cp5y, p6x, p6y);
+      bv(cp1x, cp1y, cp2x, cp2y, p3x, p3y, false);
+      bv(cp4x, cp4y, cp5x, cp5y, p6x, p6y, false);
       i++;
       continue;
     } else {
       if (circles[i].x < ci.x - ci.r || circles[i].x > ci.x + ci.r) {
-        bezierVertex(
-          circles[i].x - 20,
-          currentLineHeight,
-          circles[i].x + 20,
-          currentLineHeight,
-          circles[i].x,
-          currentLineHeight
-        );
-        push(); // draw control points
-        strokeWeight(10);
-        stroke("red");
-        point(circles[i].x, currentLineHeight);
-        pop();
+        bvx(circles[i].x, currentLineHeight, 40, 50, true);
       }
     }
     point(circles[i].x, circles[i].y);
@@ -105,6 +92,34 @@ function drawLine(currentLineHeight, ci, circles) {
 
   vertex(width, currentLineHeight); // line end
   endShape();
+}
+
+function bv(c1x, c1y, c2x, c2y, p3x, p3y, dots) {
+  if (dots) {
+    push();
+    strokeWeight(10);
+    stroke("red");
+    point(p3x, p3y);
+    stroke("blue");
+    point(c1x, c1y);
+    stroke("purple");
+    point(c2x, c2y);
+    pop();
+  }
+  bezierVertex(c1x, c1y, c2x, c2y, p3x, p3y);
+}
+
+function bvx(x, y, w, h, dots) {
+  const wmult = 1;
+  let c1x = x - w;
+  let c1y = y + h;
+  let c2x = x + w;
+  let c2y = y + h;
+  let p3x = x;
+  let p3y = y + h;
+  bv(c1x + wmult * w, y, c2x - wmult * w, y, p3x - wmult * w, y, dots);
+  bv(c1x, c1y, c2x, c2y, p3x, p3y, dots);
+  bv(c1x + wmult * w, y, c2x - wmult * w, y, p3x + wmult * w, y, dots);
 }
 
 function setup() {
