@@ -15,9 +15,8 @@ function localSetup() {
   // your setup code goes here
   lineDist = height / NUMLINES;
 
-  circles.push({ x: 300, y: 200, r: 80 });
-  circles.push({ x: 600, y: 400, r: 100 });
-  circles.push({ x: 350, y: 500, r: 50 });
+  circles.push({ x: 180, y: 300, r: 50 });
+  circles.push({ x: 450, y: 200, r: 100 });
 }
 
 function localDraw() {
@@ -53,23 +52,6 @@ function drawLine(currentLineHeight, ci, circles) {
   let p6x = ci.x + ci.r + CP_MARGIN + LINE_BACKOFF;
   let p6y = currentLineHeight;
 
-  if (DRAWCONTROLPOINTS) {
-    push(); // draw control points
-    strokeWeight(10);
-    stroke("red");
-    point(cp1x, cp1y);
-    stroke("purple");
-    point(cp2x, cp2y);
-    stroke("blue");
-    point(p3x, p3y);
-    stroke("green");
-    point(cp4x, cp4y);
-    stroke("brown");
-    point(cp5x, cp5y);
-    stroke("orange");
-    point(p6x, p6y);
-    pop();
-  }
   beginShape();
   vertex(0, currentLineHeight); // line start
 
@@ -83,7 +65,13 @@ function drawLine(currentLineHeight, ci, circles) {
       continue;
     } else {
       if (circles[i].x < ci.x - ci.r || circles[i].x > ci.x + ci.r) {
-        bvx(circles[i].x, currentLineHeight, 40, 50, true);
+        bvx(
+          circles[i].x,
+          currentLineHeight,
+          circles[i].r,
+          currentLineHeight - circles[i].y, //TODO: clamp y dist
+          true
+        );
       }
     }
     point(circles[i].x, circles[i].y);
@@ -111,15 +99,11 @@ function bv(c1x, c1y, c2x, c2y, p3x, p3y, dots) {
 
 function bvx(x, y, w, h, dots) {
   const wmult = 1;
-  let c1x = x - w;
-  let c1y = y + h;
-  let c2x = x + w;
-  let c2y = y + h;
-  let p3x = x;
-  let p3y = y + h;
-  bv(c1x + wmult * w, y, c2x - wmult * w, y, p3x - wmult * w, y, dots);
-  bv(c1x, c1y, c2x, c2y, p3x, p3y, dots);
-  bv(c1x + wmult * w, y, c2x - wmult * w, y, p3x + wmult * w, y, dots);
+  w = w / 4;
+  h = h / 3;
+  vertex(x - 4 * w, y);
+  bv(x - 2 * w, y, x - 2 * w, y + h, x, y + h, dots);
+  bv(x + 2 * w, y + h, x + 2 * w, y, x + 4 * w, y, dots);
 }
 
 function setup() {
@@ -145,7 +129,7 @@ function draw() {
   noLoop();
   stroke(0);
   background(255);
-  strokeWeight(3);
+  strokeWeight(1);
   noFill();
 
   localDraw();
