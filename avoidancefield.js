@@ -12,7 +12,7 @@ let lineDist;
 
 function localSetup() {
   // your setup code goes here
-  lineDist = height / NUMLINES;
+  ld = height / NUMLINES;
 
   circles.push({ x: 300, y: 200, r: 80 });
   circles.push({ x: 600, y: 400, r: 100 });
@@ -84,7 +84,7 @@ function localDraw() {
     } else {
       line(0, currentLineHeight, width, currentLineHeight);
     }
-    currentLineHeight += lineDist;
+    currentLineHeight += ld;
   }
 }
 

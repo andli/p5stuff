@@ -5,76 +5,61 @@ let randomHash;
 
 let circles = [];
 const DRAWCONTROLPOINTS = false;
-const NUMLINES = 140;
+const NUMLINES = 220;
 const CP_MARGIN = 0;
 const LINE_BACKOFF = 70;
 const LINE_MARGIN = 5;
-let lineDist;
+let ld;
 
 function localSetup() {
   // your setup code goes here
-  lineDist = height / NUMLINES;
+  ld = height / NUMLINES;
 
   circles.push({ x: 180, y: 300, r: 50 });
-  circles.push({ x: 450, y: 200, r: 100 });
+  circles.push({ x: 500, y: 200, r: 100 });
+  circles.push({ x: 430, y: 490, r: 75 });
 }
 
 function localDraw() {
   // your drawing code goes here
   circles.forEach(function (item) {
     circle(item.x, item.y, 2 * item.r);
-
-    drawLine(item.y - lineDist / 2, item, circles);
-    drawLine(item.y + lineDist / 2, item, circles);
   });
+
+  let currentLineHeight = 0;
+  while (currentLineHeight < height) {
+    drawLine(currentLineHeight, circles);
+
+    currentLineHeight += ld;
+  }
 }
 
-function drawLine(currentLineHeight, ci, circles) {
-  //TODO: check intersections to add points
-  circles.sort((a, b) => a.x - b.x); // sort circles in order of x pos
-
-  let dirMod = 1;
-  if (currentLineHeight < ci.y) {
-    dirMod = -1;
-  }
-  let cp1x = ci.x - ci.r - CP_MARGIN;
-  let cp1y = currentLineHeight;
-  let cp2x = ci.x - ci.r - CP_MARGIN;
-  let cp2y = ci.y + dirMod * ci.r;
-  let p3x = ci.x;
-  let distFromCenter = Math.abs(ci.y - currentLineHeight);
-  let p3y = ci.y + dirMod * (ci.r + LINE_MARGIN - distFromCenter);
-
-  let cp4x = ci.x + ci.r + CP_MARGIN;
-  let cp4y = ci.y + dirMod * ci.r;
-  let cp5x = ci.x + ci.r + CP_MARGIN;
-  let cp5y = currentLineHeight - LINE_MARGIN;
-  let p6x = ci.x + ci.r + CP_MARGIN + LINE_BACKOFF;
-  let p6y = currentLineHeight;
+function drawLine(currentLineHeight, circles) {
+  circles.sort((a, b) => a.x - b.x); // sort circles in order of x pos beacuse lines are drawn from x 0->width.
 
   beginShape();
   vertex(0, currentLineHeight); // line start
 
   let i = 0;
   while (i < circles.length) {
-    if (circles[i] === ci) {
-      vertex(ci.x - ci.r - CP_MARGIN - LINE_BACKOFF, currentLineHeight);
-      bv(cp1x, cp1y, cp2x, cp2y, p3x, p3y, false);
-      bv(cp4x, cp4y, cp5x, cp5y, p6x, p6y, false);
-      i++;
-      continue;
-    } else {
-      if (circles[i].x < ci.x - ci.r || circles[i].x > ci.x + ci.r) {
-        bvx(
-          circles[i].x,
-          currentLineHeight,
-          circles[i].r,
-          currentLineHeight - circles[i].y, //TODO: clamp y dist
-          true
-        );
-      }
+    let dirMod = 1;
+    if (currentLineHeight < circles[i].y) {
+      dirMod = -1;
     }
-    point(circles[i].x, circles[i].y);
+    let distFromCenter = Math.abs(currentLineHeight - circles[i].y); //OK
+    let r = circles[i].r; //OK
+    let threshold = r + 7 * ld;
+    print(threshold);
+    if (distFromCenter <= threshold) {
+      let numLinesPerCircle = r / ld; //OK
+      let compressedHeight = threshold / numLinesPerCircle + 0.2 * r;
+      let originalHeight = numLinesPerCircle * ld; //OK
+      let scale = compressedHeight / originalHeight; //OK
+      let addToRadius = distFromCenter * scale + LINE_MARGIN;
+      let h = dirMod * (r + addToRadius);
+      // print(numLinesPerCircle);
+      bvx(circles[i].x, currentLineHeight, r * 0.5, circles[i].y + h, false);
+    }
     i++;
   }
 
@@ -98,12 +83,16 @@ function bv(c1x, c1y, c2x, c2y, p3x, p3y, dots) {
 }
 
 function bvx(x, y, w, h, dots) {
-  const wmult = 1;
-  w = w / 4;
-  h = h / 3;
+  push();
+  if (dots) {
+    strokeWeight(10);
+    stroke("green");
+    point(x - 4 * w, y);
+  }
   vertex(x - 4 * w, y);
-  bv(x - 2 * w, y, x - 2 * w, y + h, x, y + h, dots);
-  bv(x + 2 * w, y + h, x + 2 * w, y, x + 4 * w, y, dots);
+  pop();
+  bv(x - 2 * w, y, x - 2 * w, h, x, h, dots);
+  bv(x + 2 * w, h, x + 2 * w, y, x + 4 * w, y, dots);
 }
 
 function setup() {
