@@ -1,7 +1,7 @@
 let axiom = "X";
 let sentence = axiom;
 let rules = [];
-let len = 25;
+let len = 55;
 let angle = 17;
 let generations = 5;
 let flowerTypeCounter = 0;
@@ -13,7 +13,10 @@ rules[0] = {
 
 rules[1] = {
   a: "X",
-  b: "F+[X]-F[+FX]-[XF*]",
+  b: "F+[XF]-F[F+X]-[XF*]",
+
+  //b: "F+[XF]-F[+FX]-[F-[XF*]]",
+  //b: "F+[XF]-F[+FX]-[XF*]",
 };
 
 function generate() {
@@ -33,7 +36,7 @@ function generate() {
     }
   }
   sentence = nextSentence;
-  len *= 0.8;
+  len *= 0.68;
 }
 
 function drawPetal(petalLength, petalWidth, style) {
