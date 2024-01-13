@@ -1,0 +1,28 @@
+// by Thomas Munoz
+// from https://github.com/Epholys/procgen
+axiom: X
+rules: 
+ Y => [+X]
+ F => FF
+ X => F[-FX][+Y][FFY[--FX][FX][++FX]]FYF[+FX]
+
+depth: 5
+
+stepsPerFrame: 1000
+direction: [0, 1, 0]
+angle: 16.5
+
+actions:
+  F => draw()
+
+
+
+axiom: X
+rules: X
+ F => FF
+ X => F-[[X]+X]+F[+FX]-X
+
+direction: [0, 1, 0]
+angle: 22.5
+
+https://anvaka.github.io/lsystem/?code=axiom%3A%20X%0Arules%3A%20 %0A%20F%20%3D%3E%20FF%0A%20X%20%3D%3E%20F-%5B%5BX%5D%2BX%5D%2BF%5B%2BFX%5D-X%0A%0Adirection%3A%20%5B0%2C%201%2C%200%5D%0Aangle%3A%2022.5
