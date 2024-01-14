@@ -5,18 +5,19 @@ const RENDER_SVG = false;
 let axiom = "X";
 let sentence = axiom;
 let rules = [];
-let len = 50;
-let angle = 22;
-let generations = 6;
 
 rules[0] = {
   a: "F",
   b: "FF",
 };
 
+let len = 50;
+let angle = 25;
+let generations = 6;
 rules[1] = {
   a: "X",
-  b: "FL-[F][XF]+FL[F-XF*]+[X]", //big one
+  // b: "F+[X]-F[F+XF*]-[X]", //new
+  b: "FL-[XF]+FL[F-XF*]+[X]", //big one
   // b: "F+[XF]-F[F+XF*]-[X]", //original
 };
 
@@ -38,6 +39,17 @@ function generate() {
   }
   sentence = nextSentence;
   len *= 0.68;
+}
+function drawEpicycleFlower(x, y, numPetals, petalLength, petalWidth, style) {
+  push();
+  translate(x, y);
+  rotate(PI / 2); // Adjust orientation of first petal
+
+  for (let i = 0; i < numPetals; i++) {
+    drawPetal(petalLength, petalWidth, style);
+    rotate(TWO_PI / numPetals);
+  }
+  pop();
 }
 
 function drawPetal(petalLength, petalWidth, style) {
@@ -85,18 +97,6 @@ function drawPetal(petalLength, petalWidth, style) {
   }
   endShape();
   stroke(0);
-}
-
-function drawEpicycleFlower(x, y, numPetals, petalLength, petalWidth, style) {
-  push();
-  translate(x, y);
-  rotate(PI / 2); // Adjust orientation of first petal
-
-  for (let i = 0; i < numPetals; i++) {
-    drawPetal(petalLength, petalWidth, style);
-    rotate(TWO_PI / numPetals);
-  }
-  pop();
 }
 
 function drawEpicycleLeaf(x, y, leafLength, leafWidth, branchAngle) {
@@ -172,15 +172,9 @@ function turtle() {
         } else if (flowerTypeCounter % 2 == 0) {
           drawEpicycleFlower(0, 0, 5, 12, 6, "pointy");
         } else {
-          drawEpicycleLeaf(0, 0, 16, 8, currentBranchAngle);
+          drawEpicycleLeaf(0, 0, 18, 10, currentBranchAngle);
         }
 
-        break;
-      case "L":
-        // Logic for drawing a leaf
-        push();
-        // drawEpicycleLeaf(0, 0, 12, 5, currentBranchAngle);
-        pop();
         break;
     }
     flowerTypeCounter += 1;
