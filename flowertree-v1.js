@@ -45,6 +45,7 @@ function drawPetal(petalLength, petalWidth, style) {
   // Drawing a petal with different styles
   beginShape();
   if (style === "pointy") {
+    stroke("violet");
     vertex(0, 0);
     bezierVertex(
       petalWidth / 2,
@@ -64,6 +65,7 @@ function drawPetal(petalLength, petalWidth, style) {
     );
   } else {
     // Default style: 'round'
+    stroke("teal");
     vertex(0, 0);
     bezierVertex(
       petalWidth,
@@ -83,6 +85,7 @@ function drawPetal(petalLength, petalWidth, style) {
     );
   }
   endShape();
+  stroke(0);
 }
 
 function drawEpicycleFlower(x, y, numPetals, petalLength, petalWidth, style) {
