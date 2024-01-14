@@ -16,8 +16,8 @@ rules[0] = {
 
 rules[1] = {
   a: "X",
-  b: "FL-[F][XF]+FL[F-XF*]+[X]",
-  // b: "F+[XF]-F[F+XF*]-[X]",
+  b: "FL-[F][XF]+FL[F-XF*]+[X]", //big one
+  // b: "F+[XF]-F[F+XF*]-[X]", //original
 };
 
 function generate() {
