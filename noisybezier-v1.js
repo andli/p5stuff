@@ -8,7 +8,8 @@ let noiseFactor;
 
 function setup() {
   createCanvas(1000, 1000); //, SVG);
-  createCanvas(1000, 1000, SVG);
+  // createCanvas(1000, 1000, SVG);
+
   //createCanvas(1000, 1414, SVG);// A3 paper size
 
   noiseSeed(1);
@@ -28,7 +29,7 @@ function draw() {
   let drawControlPoints = false;
 
   drawCurves();
-  save("noisybezier.svg");
+  // save("noisybezier.svg");
 
   function drawCurves() {
     rect(margin, margin, width - 2 * margin, height - 2 * margin);
