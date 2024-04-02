@@ -1,13 +1,14 @@
-const A3SCALE = 1.414;
+const A3SCALE = 2; //1.414;
 const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
+// http://localhost:3000/?hash=
 
 const graphWidth = CANVAS_WIDTH;
 const graphHeight = CANVAS_WIDTH;
-const numLines = 40;
+const numLines = 50;
 const spacing = graphHeight / numLines;
-const amplitudeMax = 520;
+const amplitudeMax = 400;
 
 function localSetup() {
   // your setup code goes here
@@ -19,23 +20,29 @@ function localDraw() {
   // background(255);
   strokeWeight(1);
   noFill();
-  var step = 0.01;
-  for (let l = 0; l < numLines; l++) {
-    beginShape();
-    var xOffset = 0;
-    var amp = 0;
-    for (var x = 0; x < graphWidth; x++) {
-      //amp = sq(x / graphWidth) * amplitudeMax;
-      amp = map(0.001 * sq(l), 0, numLines, 0, amplitudeMax);
-      var noiseY = noise(xOffset) * l * amp;
-      var sinY = sin(map(xOffset, 0, step * graphWidth, 0, TWO_PI / 2));
-      var y = noiseY * sinY;
-      vertex(x, y + l * spacing);
-      //vertex(x, sinY + l * spacing);
+  let colors = ["purple", "orange", "teal"];
+  var step = 0.015;
 
-      xOffset += step;
+  for (let k = 0; k < colors.length; k++) {
+    stroke(colors[k]);
+    for (let l = 0; l < numLines; l++) {
+      beginShape();
+      var xOffset = 0;
+      var yOffset = (k * spacing) / colors.length;
+      var amp = 0;
+      for (var x = 0; x < graphWidth; x++) {
+        //amp = sq(x / graphWidth) * amplitudeMax;
+        amp = map(0.001 * sq(l), 0, numLines, 0, amplitudeMax);
+        var noiseY = noise(k + xOffset) * l * amp;
+        var sinY = sin(map(xOffset, 0, step * graphWidth, 0, TWO_PI / 2));
+        var y = noiseY * sinY + yOffset;
+        vertex(x, y + l * spacing);
+        //vertex(x, sinY + l * spacing);
+
+        xOffset += step;
+      }
+      endShape();
     }
-    endShape();
   }
 }
 
