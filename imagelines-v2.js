@@ -30,7 +30,7 @@ function setup() {
 
   noLoop(); // The image is static, so no need to loop
   img.resize(width, height); // Resize the image to fit the canvas
-  pixelDensity(1); // Ensure pixel density is consistent
+  pixelDensity(3); // Ensure pixel density is consistent
 }
 
 function draw() {
@@ -48,10 +48,10 @@ function draw() {
   const lineSpacing = height / maxLines; // Calculate the vertical spacing between lines
 
   // Modulation parameters
-  const maxAmplitude = 6; // Adjusted maximum wave amplitude for clarity
+  const maxAmplitude = 5; // Adjusted maximum wave amplitude for clarity
   const maxFrequency = 0.5; // Maximum wave frequency
-  const amplitudeThreshold = 230; // Lower threshold for the grayscale to affect amplitude
-  const smoothFactor = 0.65; // Adjust this to control the smoothing effect
+  const amplitudeThreshold = 240; // Lower threshold for the grayscale to affect amplitude
+  const smoothFactor = 0.7; // Adjust this to control the smoothing effect
 
   let prevFrequency = 0; // Store the previous frequency
   // Draw modulated lines at intervals based on maxLines
