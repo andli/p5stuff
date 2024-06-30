@@ -6,9 +6,11 @@ let randomHash;
 
 const graphWidth = CANVAS_WIDTH;
 const graphHeight = CANVAS_WIDTH;
-const numLines = 100;
-const spacing = graphHeight / numLines;
-const amplitudeMax = 100;
+const colors = ["purple", "orange", "teal"];
+const numLines = colors.length * 25;
+const spacing = 2;
+const amplitudeMax = 1;
+const step = 0.01; //noise offset
 
 function localSetup() {
   // your setup code goes here
@@ -20,29 +22,30 @@ function localDraw() {
   // background(255);
   strokeWeight(1);
   noFill();
-  let colors = ["purple", "orange", "teal"];
-  var step = 0.015;
 
-  for (let k = 0; k < colors.length; k++) {
-    stroke(colors[k]);
-    for (let l = 0; l < numLines; l++) {
-      beginShape();
-      var xOffset = 0;
-      var yOffset = (k * spacing) / colors.length;
-      var amp = 0;
-      for (var x = 0; x < graphWidth; x++) {
-        //amp = sq(x / graphWidth) * amplitudeMax;
-        amp = map(0.001 * sq(l), 0, numLines, 0, amplitudeMax);
-        var noiseY = noise(k + xOffset) * l * amp;
-        var sinY = sin(map(xOffset, 0, step * graphWidth, 0, TWO_PI / 2));
-        var y = noiseY * sinY + yOffset;
-        vertex(x, y + l * spacing);
-        //vertex(x, sinY + l * spacing);
+  var yGlobalOffset = graphHeight / 2;
 
-        xOffset += step;
+  var xOffset = 0;
+  for (let l = -numLines; l < numLines; l++) {
+    let color = colors[Math.abs(l) % colors.length];
+    stroke(color);
+    beginShape();
+    var yOffset = Math.abs(l) * spacing;
+    var amp = 0;
+    for (var x = 0; x < graphWidth; x++) {
+      amp = map(sq(l), 0, numLines, 0, amplitudeMax);
+      var noiseY = noise(xOffset) * amp;
+      var sineComp = sin(map(xOffset, 0, step * graphHeight, 0, TWO_PI / 2));
+      var y = noiseY * sineComp + yOffset;
+      if (l < 0) {
+        y = -y;
       }
-      endShape();
+      vertex(x, y + yGlobalOffset);
+      //vertex(x, sinY + l * spacing);
+
+      xOffset += step;
     }
+    endShape();
   }
 }
 

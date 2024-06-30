@@ -1,48 +1,43 @@
-const A3SCALE = 2; //1.414;
+const A3SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
-// http://localhost:3000/?hash=
-
-const graphWidth = CANVAS_WIDTH;
-const graphHeight = CANVAS_WIDTH;
-const numLines = 100;
-const spacing = graphHeight / numLines;
-const amplitudeMax = 100;
+let seed;
+let circleRadius;
 
 function localSetup() {
-  // your setup code goes here
-  noLoop();
+  // Set the radius of the circle
+  circleRadius = CANVAS_WIDTH / 3; // Example radius
 }
 
 function localDraw() {
-  // your drawing code goes here
-  // background(255);
-  strokeWeight(1);
-  noFill();
-  let colors = ["purple", "orange", "teal"];
-  var step = 0.015;
+  // Draw the circle filled with flow fields
+  let centerX = width / 2 - 100;
+  let centerY = height / 2 - 350;
 
-  for (let k = 0; k < colors.length; k++) {
-    stroke(colors[k]);
-    for (let l = 0; l < numLines; l++) {
-      beginShape();
-      var xOffset = 0;
-      var yOffset = (k * spacing) / colors.length;
-      var amp = 0;
-      for (var x = 0; x < graphWidth; x++) {
-        //amp = sq(x / graphWidth) * amplitudeMax;
-        amp = map(0.001 * sq(l), 0, numLines, 0, amplitudeMax);
-        var noiseY = noise(k + xOffset) * l * amp;
-        var sinY = sin(map(xOffset, 0, step * graphWidth, 0, TWO_PI / 2));
-        var y = noiseY * sinY + yOffset;
-        vertex(x, y + l * spacing);
-        //vertex(x, sinY + l * spacing);
+  let numCurves = 450; // Number of flow lines
+  let noiseScale = 0.0002; // Scale of the Perlin noise
+  let stepSize = 6; // Size of each step in the flow field
+  let maxSteps = 300; // Maximum number of steps per flow line
 
-        xOffset += step;
-      }
-      endShape();
+  for (let i = 0; i < numCurves; i++) {
+    // Start each line at a random point within the circle
+    let angle = random(TWO_PI);
+    let radius = random(circleRadius);
+    let startX = centerX + radius * cos(angle);
+    let startY = centerY + radius * sin(angle);
+    let x = startX;
+    let y = startY;
+
+    beginShape();
+    for (let j = 0; j < maxSteps; j++) {
+      if (dist(x, y, centerX, centerY) > circleRadius) break;
+      vertex(x, y);
+      let angle = noise(x * noiseScale, y * noiseScale) * TWO_PI ; // Multiply by 4 to create more complex flows
+      x += cos(angle) * stepSize;
+      y += sin(angle) * stepSize;
     }
+    endShape();
   }
 }
 

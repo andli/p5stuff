@@ -1,48 +1,42 @@
-const A3SCALE = 2; //1.414;
+const A3SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
 let randomHash;
-// http://localhost:3000/?hash=
-
-const graphWidth = CANVAS_WIDTH;
-const graphHeight = CANVAS_WIDTH;
-const numLines = 100;
-const spacing = graphHeight / numLines;
-const amplitudeMax = 100;
+let seed;
+let circleRadius;
 
 function localSetup() {
-  // your setup code goes here
-  noLoop();
+  // Set the radius of the circle
+  circleRadius = CANVAS_WIDTH / 3; // Example radius
 }
 
 function localDraw() {
-  // your drawing code goes here
-  // background(255);
-  strokeWeight(1);
-  noFill();
-  let colors = ["purple", "orange", "teal"];
-  var step = 0.015;
+  // Draw the circle filled with bezier curves
+  let centerX = width / 2;
+  let centerY = height / 2;
 
-  for (let k = 0; k < colors.length; k++) {
-    stroke(colors[k]);
-    for (let l = 0; l < numLines; l++) {
-      beginShape();
-      var xOffset = 0;
-      var yOffset = (k * spacing) / colors.length;
-      var amp = 0;
-      for (var x = 0; x < graphWidth; x++) {
-        //amp = sq(x / graphWidth) * amplitudeMax;
-        amp = map(0.001 * sq(l), 0, numLines, 0, amplitudeMax);
-        var noiseY = noise(k + xOffset) * l * amp;
-        var sinY = sin(map(xOffset, 0, step * graphWidth, 0, TWO_PI / 2));
-        var y = noiseY * sinY + yOffset;
-        vertex(x, y + l * spacing);
-        //vertex(x, sinY + l * spacing);
+  let numCurves = 300; // Number of bezier curves
+  let noiseScale = 2;
 
-        xOffset += step;
-      }
-      endShape();
-    }
+  for (let i = 0; i < numCurves; i++) {
+    let t = (i + 0.5) / numCurves; // Adjust t to avoid edge cases
+
+    let y1 = lerp(centerY - circleRadius, centerY + circleRadius, t);
+    let y4 = y1;
+
+    let x1 = centerX - sqrt(circleRadius ** 2 - (y1 - centerY) ** 2);
+    let x4 = centerX + sqrt(circleRadius ** 2 - (y1 - centerY) ** 2);
+
+    let noiseVal1 = noise(t * noiseScale);
+    let noiseVal2 = noise((t + 1) * noiseScale);
+
+    // Control points adjusted by Perlin noise, kept inside the circle
+    let x2 = lerp(x1, x4, 0.3) + (noiseVal1 - 0.5) * circleRadius * 0.8;
+    let y2 = y1 + (noiseVal1 - 0.5) * circleRadius * 0.8;
+    let x3 = lerp(x1, x4, 0.7) + (noiseVal2 - 0.5) * circleRadius * 0.8;
+    let y3 = y4 + (noiseVal2 - 0.5) * circleRadius * 0.8;
+
+    bezier(x1, y1, x2, y2, x3, y3, x4, y4);
   }
 }
 
