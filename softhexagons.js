@@ -1,3 +1,5 @@
+//http://127.0.0.1:3000/?hash=0xdd54690a4d5c4079c73fa00d1fb4d7ef21ba9d3b63ceccc295a59fa38a628a0a
+
 const A3SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
@@ -6,9 +8,8 @@ let seed;
 let hexRadius;
 
 const ROWS = 5;
-const COLS = 4;
+const COLS = 5;
 const HEX_RADIUS = 100; // Radius of the hexagon
-const PADDING = 0; // Space between hexagons
 
 function localSetup() {
   // Set the radius of the hexagon
@@ -16,32 +17,33 @@ function localSetup() {
 }
 
 function localDraw() {
-  let hexWidth = hexRadius * sqrt(3); // Width of a single hexagon
-  let hexHeight = hexRadius * 2; // Height of a single hexagon
-  let horizontalSpacing = hexWidth + PADDING; // Horizontal spacing between hexagon centers
-  let verticalSpacing = hexHeight * 0.75 + PADDING; // Vertical spacing between hexagon centers
-  let totalWidth = COLS * hexWidth + (COLS - 1) * PADDING; // Total width of the hexagon grid
-  let totalHeight = (ROWS - 1) * verticalSpacing + hexHeight / 2; // Total height of the hexagon grid
+  let hexWidth = hexRadius * 2; // Width of a single hexagon
+  let hexHeight = hexRadius * sqrt(3); // Height of a single hexagon
+  let horizontalSpacing = hexWidth * 3/4; // Horizontal spacing between hexagon centers
+  let verticalSpacing = hexHeight; // Vertical spacing between hexagon centers
+  let totalWidth = (COLS - 1) * horizontalSpacing + hexWidth; // Total width of the hexagon grid
+  let totalHeight = (ROWS - 1) * verticalSpacing + hexHeight; // Total height of the hexagon grid
 
   let startX = (width - totalWidth) / 2;
   let startY = (height - totalHeight) / 2;
 
   for (let col = 0; col < COLS; col++) {
     for (let row = 0; row < ROWS; row++) {
-      let offsetY = (col % 2) * (hexHeight * 0.5);
       let centerX = startX + col * horizontalSpacing;
-      let centerY = startY + row * verticalSpacing + offsetY;
+      let centerY = startY + row * verticalSpacing + (col % 2) * (hexHeight / 2);
       
       drawFlowFieldHexagon(centerX, centerY, hexRadius);
+      //drawHexagonOutline(centerX, centerY, hexRadius);
     }
   }
 }
 
 
 function drawFlowFieldHexagon(centerX, centerY, radius) {
+  stroke(0);
   let numCurves = 300; // Number of flow lines
-  let noiseScale = 0.0022; // Scale of the Perlin noise
-  let stepSize = 2; // Size of each step in the flow field
+  let noiseScale = 0.0032; // Scale of the Perlin noise
+  let stepSize = 1; // Size of each step in the flow field
   let maxSteps = 150; // Maximum number of steps per flow line
 
   noiseSeed(randomHash.random_int(0, 1000000)); // Ensure each hexagon has its own unique noise pattern
@@ -65,6 +67,19 @@ function drawFlowFieldHexagon(centerX, centerY, radius) {
     }
     endShape();
   }
+}
+
+function drawHexagonOutline(centerX, centerY, radius) {
+  stroke(255, 0, 0); // Set stroke color to red
+  noFill();
+  beginShape();
+  for (let i = 0; i < 6; i++) {
+    let angle = TWO_PI / 6 * i;
+    let x = centerX + radius * cos(angle);
+    let y = centerY + radius * sin(angle);
+    vertex(x, y);
+  }
+  endShape(CLOSE);
 }
 
 function pointInHexagon(x, y, centerX, centerY, radius) {
