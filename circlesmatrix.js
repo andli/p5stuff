@@ -1,6 +1,18 @@
-const RENDER_SVG = false;
-const A_PAPER_SCALE = 1.414;
+const A3SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
+const RENDER_SVG = false;
+
+const MARGIN = 70;
+const MAX_DIAMETER = 19;
+const SPACING = MAX_DIAMETER * 0.8;
+const NOISE_SCALING = 0.12;
+const SMALLEST_RADIUS_THRESHOLD = MAX_DIAMETER * 0.2;
+const CIRCLE_COLS = Math.round((CANVAS_WIDTH - 2 * MARGIN) / SPACING);
+const CIRCLE_ROWS =
+  Math.round(((CANVAS_WIDTH - 2 * MARGIN) / SPACING) * A3SCALE) + 4;
+
+console.log(CIRCLE_COLS);
+
 let randomHash;
 
 function localSetup() {
@@ -8,7 +20,41 @@ function localSetup() {
 }
 
 function localDraw() {
-  // your drawing code goes here
+  // Calculate the values
+  const valuesArray = Array.from(
+    { length: CIRCLE_ROWS * CIRCLE_COLS },
+    (_, index) => MAX_DIAMETER * getNoise(index)
+  );
+
+  // Draw the circles in a snake-like pattern
+  for (let i = 0; i < CIRCLE_COLS; i++) {
+    if (i % 2 === 0) {
+      // Odd row (0-indexed): left to right
+      for (let j = 0; j < CIRCLE_ROWS; j++) {
+        drawCircle(i, j);
+      }
+    } else {
+      // Even row (0-indexed): right to left
+      for (let j = CIRCLE_ROWS - 1; j >= 0; j--) {
+        drawCircle(i, j);
+      }
+    }
+  }
+
+  function drawCircle(i, j) {
+    const yCoord = j * SPACING + MARGIN;
+    const xCoord = i * SPACING + MARGIN;
+
+    const arrayPos = i * CIRCLE_COLS + j;
+    if (valuesArray[arrayPos] < SMALLEST_RADIUS_THRESHOLD) {
+      return;
+    }
+    circle(xCoord, yCoord, valuesArray[arrayPos]);
+  }
+}
+
+function getNoise(param) {
+  return noise(param * NOISE_SCALING);
 }
 
 function setup() {
