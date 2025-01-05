@@ -1,6 +1,7 @@
 const RENDER_SVG = false;
 const A_PAPER_SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = Math.round(1000 * A_PAPER_SCALE);
 let randomHash;
 
 function localSetup() {
@@ -22,9 +23,9 @@ function setup() {
   randomSeed(seed);
 
   if (RENDER_SVG) {
-    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE), SVG);
+    createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, SVG);
   } else {
-    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE));
+    createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
   }
 
   localSetup();

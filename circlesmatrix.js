@@ -1,17 +1,16 @@
-const A3SCALE = 1.414;
-const CANVAS_WIDTH = 1000;
 const RENDER_SVG = false;
+const A_PAPER_SCALE = 1.414;
+const CANVAS_WIDTH = 1000;
+const CANVAS_HEIGHT = Math.round(1000 * A_PAPER_SCALE);
 
-const MARGIN = 70;
-const MAX_DIAMETER = 19;
-const SPACING = MAX_DIAMETER * 0.8;
-const NOISE_SCALING = 0.12;
-const SMALLEST_RADIUS_THRESHOLD = MAX_DIAMETER * 0.2;
+const MARGIN = 80;
+const MAX_DIAMETER = 8;
+const SPACING = MAX_DIAMETER * 0.9;
+const NOISE_SCALING = 0.08;
+const SMALLEST_RADIUS_THRESHOLD = MAX_DIAMETER * 0.05;
+
 const CIRCLE_COLS = Math.round((CANVAS_WIDTH - 2 * MARGIN) / SPACING);
-const CIRCLE_ROWS =
-  Math.round(((CANVAS_WIDTH - 2 * MARGIN) / SPACING) * A3SCALE) + 4;
-
-console.log(CIRCLE_COLS);
+const CIRCLE_ROWS = Math.round((CANVAS_HEIGHT - 2 * MARGIN) / SPACING);
 
 let randomHash;
 
@@ -68,9 +67,9 @@ function setup() {
   randomSeed(seed);
 
   if (RENDER_SVG) {
-    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE), SVG);
+    createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, SVG);
   } else {
-    createCanvas(CANVAS_WIDTH, Math.round(CANVAS_WIDTH * A3SCALE));
+    createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
   }
 
   localSetup();
