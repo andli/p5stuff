@@ -23,9 +23,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="4.1585016"
-     inkscape:cx="231.69403"
-     inkscape:cy="47.252597"
+     inkscape:zoom="2.9405047"
+     inkscape:cx="232.44309"
+     inkscape:cy="77.027594"
      inkscape:window-width="2560"
      inkscape:window-height="1369"
      inkscape:window-x="1072"
@@ -50,41 +50,10 @@
      style="stroke:#ff0000"
      transform="translate(-21.248721,-12.612122)">
     <g
-       id="g3">
-      <g
-         id="g10"
-         inkscape:export-filename="C:\Users\Andreas\repos\p5stuff\matrixchars\01.svg"
-         inkscape:export-xdpi="300"
-         inkscape:export-ydpi="300">
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.505141,12.740842 c 0,0 1.709913,0.405607 2.298442,0.898698"
-           id="path7" />
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.481282,15.46875 c 0,0 1.479274,0.246545 2.457503,1.065713"
-           id="path8" />
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.290408,18.140986 c 0,0 2.03599,0.676012 2.88697,1.487227"
-           id="path9" />
-      </g>
-      <g
-         id="g10-7"
-         style="stroke:#ff0000">
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.505141,12.740842 c 0,0 1.709913,0.405607 2.298442,0.898698"
-           id="path7-1" />
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.481282,15.46875 c 0,0 1.479274,0.246545 2.457503,1.065713"
-           id="path8-1" />
-        <path
-           style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="m 21.290408,18.140986 c 0,0 2.03599,0.676012 2.88697,1.487227"
-           id="path9-5" />
-      </g>
+       id="g3"
+       inkscape:export-filename="C:\Users\Andreas\repos\p5stuff\matrixchars\01.svg"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
       <path
          style="fill:none;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          d="m 21.505141,12.740842 c 0,0 1.709913,0.405607 2.298442,0.898698"
