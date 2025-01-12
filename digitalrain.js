@@ -1,117 +1,27 @@
-import { Random } from "./libraries/random.js";
-
-const RENDER_SVG = false;
-const A_PAPER_SCALE = 1.414;
 const CANVAS_WIDTH = 1000;
-const CANVAS_HEIGHT = Math.round(1000 * A_PAPER_SCALE);
-const cols = 40; // Number of columns
-const charSize = 20; // Size of each character
-let streams = []; // Array to store the rain streams
-let randomHash;
+const CANVAS_HEIGHT = 200; // Adjust based on character size and padding
+const CHAR_HEIGHT = 100; // Desired character height in pixels
+const NUM_CHARS = 16; // Number of SVG files (00.svg to 16.svg)
+const SCALE_FACTOR = 1; // Fixed scale factor for all characters
 
-let svgPaths = []; // Array to store loaded SVG files
-let parsedPaths = []; // Parsed path data from SVGs
-const numChars = 17; // Number of SVG files (00.svg to 16.svg)
+let svgPaths = []; // To store loaded SVG files
+let parsedPaths = []; // To store parsed path data
 
 const sketch = (p) => {
-  class MatrixStream {
-    init(x, charSize, canvasHeight) {
-      this.x = x; // X position of the stream
-      this.y = p.random(-1000, 0); // Start offscreen
-      this.speed = p.random(2, 5); // Random speed for the stream
-      this.charSize = charSize; // Character size
-      this.canvasHeight = canvasHeight; // Canvas height reference
-      this.charCount = p.round(p.random(5, 15)); // Number of characters in this stream
-      this.chars = []; // Array to store the characters
-
-      // Generate the characters for this stream
-      for (let i = 0; i < this.charCount; i++) {
-        this.chars.push({
-          charIndex: p.floor(p.random(parsedPaths.length)), // Randomly pick an SVG path index
-          brightness: 255, // Brightness for fading effect
-        });
-      }
-    }
-
-    update() {
-      this.y += this.speed;
-
-      if (this.y > this.canvasHeight + this.charCount * this.charSize) {
-        this.y = p.random(-1000, 0);
-        this.speed = p.random(2, 5);
-        this.charCount = p.round(p.random(5, 15));
-        this.chars = [];
-        for (let i = 0; i < this.charCount; i++) {
-          this.chars.push({
-            charIndex: p.floor(p.random(parsedPaths.length)),
-            brightness: 255,
-          });
-        }
-      }
-
-      for (let char of this.chars) {
-        char.brightness = Math.max(char.brightness - 5, 50);
-      }
-    }
-
-    show() {
-      for (let i = 0; i < this.charCount; i++) {
-        const char = this.chars[i];
-        const svgPathsForChar = parsedPaths[char.charIndex]; // All paths for this character
-        const y = this.y - i * this.charSize;
-
-        if (!svgPathsForChar || svgPathsForChar.length === 0) {
-          console.warn("No paths to render for charIndex:", char.charIndex);
-          continue; // Skip invalid paths
-        }
-
-        console.log(
-          `Rendering charIndex ${char.charIndex} at x=${this.x}, y=${y}`
-        );
-
-        p.push();
-        p.translate(this.x, y);
-        p.scale(0.1); // Adjust scale to fit the character size
-
-        for (let path of svgPathsForChar) {
-          console.log(`Rendering path: ${path}`);
-          p.beginShape();
-          const commands = path.split(/(?=[MmLlHhVvCcSsQqTtAaZz])/); // Split SVG path commands
-          for (let cmd of commands) {
-            const type = cmd[0];
-            const coords = cmd.slice(1).trim().split(/[, ]+/).map(Number);
-
-            switch (type) {
-              case "M": // Move to
-                p.vertex(coords[0], coords[1]);
-                break;
-              case "L": // Line to
-                p.vertex(coords[0], coords[1]);
-                break;
-              // Add more cases for other commands (C, Q, etc.) if needed
-            }
-          }
-          p.endShape(p.CLOSE);
-        }
-
-        p.pop();
-      }
-    }
-  }
-
+  // Preload SVG files
   p.preload = () => {
-    // Load all SVG files
-    for (let i = 0; i < numChars; i++) {
-      let filename = `matrixchars/${String(i).padStart(2, "0")}.svg`;
+    for (let i = 0; i < NUM_CHARS; i++) {
+      const filename = `matrixchars/${String(i).padStart(2, "0")}.svg`;
       svgPaths.push(p.loadXML(filename));
     }
   };
 
+  // Extract all paths from the loaded SVG
   const getAllPaths = (xml) => {
     const paths = [];
     const traverse = (node) => {
       if (node.getName() === "path") {
-        const d = node.getString("d"); // Use getString to get the 'd' attribute
+        const d = node.getString("d");
         if (d) paths.push(d);
       }
       const children = node.getChildren();
@@ -125,60 +35,118 @@ const sketch = (p) => {
     return paths;
   };
 
-  p.setup = () => {
-    // Create the canvas (or SVG if needed)
-    if (RENDER_SVG) {
-      p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, p.SVG);
-    } else {
-      p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    }
+  // Convert relative SVG path commands to absolute commands
+  const convertRelativeToAbsolute = (path) => {
+    const commands = path.split(/(?=[MmLlHhVvCcSsQqTtAaZz])/); // Split path commands
+    let currentX = 0;
+    let currentY = 0;
+    let convertedPath = "";
 
-    // Parse the SVG paths
-    for (let svg of svgPaths) {
-      const pathDataArray = getAllPaths(svg);
-      if (pathDataArray.length > 0) {
-        parsedPaths.push(pathDataArray);
-      } else {
-        console.warn("No valid paths found in SVG:", svg);
-        parsedPaths.push([]);
+    for (let cmd of commands) {
+      const type = cmd[0];
+      const coords = cmd.slice(1).trim().split(/[, ]+/).map(Number);
+
+      if (type === "m" || type === "M") {
+        currentX += coords[0];
+        currentY += coords[1];
+        convertedPath += `M ${currentX} ${currentY} `;
+      } else if (type === "l" || type === "L") {
+        currentX += coords[0];
+        currentY += coords[1];
+        convertedPath += `L ${currentX} ${currentY} `;
+      } else if (type === "c" || type === "C") {
+        const [x1, y1, x2, y2, x, y] = coords;
+        const absCoords = [
+          currentX + x1,
+          currentY + y1,
+          currentX + x2,
+          currentY + y2,
+          currentX + x,
+          currentY + y,
+        ];
+        currentX += x;
+        currentY += y;
+        convertedPath += `C ${absCoords.join(" ")} `;
       }
     }
 
-    console.log("Parsed paths:", parsedPaths); // Debug parsed paths
+    return convertedPath.trim();
+  };
 
-    // Seed randomness
-    randomHash = new Random();
-    const seed = Math.round(randomHash.random_dec() * 1000000000);
-    p.noiseSeed(seed);
-    p.randomSeed(seed);
+  p.setup = () => {
+    p.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    p.noLoop(); // Static rendering
 
-    p.textFont("monospace");
-    p.textSize(charSize);
-
-    // Initialize streams
-    for (let i = 0; i < cols; i++) {
-      const x = i * charSize;
-      const stream = new MatrixStream();
-      stream.init(x, charSize, CANVAS_HEIGHT);
-      streams.push(stream);
+    // Parse SVG paths
+    for (let svg of svgPaths) {
+      const pathData = getAllPaths(svg);
+      parsedPaths.push(pathData);
     }
 
-    // Disable looping (static image)
-    p.noLoop();
+    console.log("Parsed paths:", parsedPaths); // Debug parsed paths
   };
 
   p.draw = () => {
-    // Set background for the static image
-    p.background(255); // White background for Axidraw
+    p.background(121); // White background
+    p.noFill();
+    p.stroke(0); // Black stroke
+    p.strokeWeight(1);
 
-    // Render all streams (characters)
-    for (const stream of streams) {
-      stream.show();
-    }
+    const spacing = 10; // Space for each character
+    for (let i = 0; i < NUM_CHARS; i++) {
+      const x = spacing * i + spacing / 2; // Center each character in its space
+      const y = CANVAS_HEIGHT / 2; // Center vertically
 
-    // Save the static image if using SVG
-    if (RENDER_SVG) {
-      p.save("out.svg"); // Save the file for Axidraw
+      const charPaths = parsedPaths[i];
+      if (!charPaths || charPaths.length === 0) {
+        console.warn(`No paths for character ${i}`);
+        continue;
+      }
+
+      console.log(`Rendering character ${i} at x=${x}, y=${y}`);
+
+      p.push();
+      p.translate(x, y); // Position the character
+      p.scale(SCALE_FACTOR); // Apply fixed scale to all characters
+
+      for (let path of charPaths) {
+        const absolutePath = convertRelativeToAbsolute(path); // Convert path to absolute
+        console.log(`Rendering path: ${absolutePath}`);
+        p.beginShape();
+        const commands = absolutePath.split(/(?=[MmLlHhVvCcSsQqTtAaZz])/);
+        for (let cmd of commands) {
+          const type = cmd[0];
+          const coords = cmd.slice(1).trim().split(/[, ]+/).map(Number);
+
+          switch (type) {
+            case "M":
+              p.vertex(coords[0], coords[1]);
+              break;
+            case "L":
+              p.vertex(coords[0], coords[1]);
+              break;
+            case "C":
+              p.bezierVertex(
+                coords[0],
+                coords[1],
+                coords[2],
+                coords[3],
+                coords[4],
+                coords[5]
+              );
+              break;
+            case "Q": // Quadratic Bézier curve
+              p.quadraticVertex(coords[0], coords[1], coords[2], coords[3]);
+              break;
+            case "Z": // Close path
+              p.endShape(p.CLOSE);
+              break;
+          }
+        }
+        p.endShape();
+      }
+
+      p.pop();
     }
   };
 };

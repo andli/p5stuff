@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="2.7924652mm"
-   height="8.4334164mm"
-   viewBox="0 0 2.7924652 8.4334164"
+   width="4.1556811mm"
+   height="7.4695611mm"
+   viewBox="0 0 4.1556811 7.4695611"
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
@@ -35,8 +35,8 @@
     <inkscape:page
        x="0"
        y="0"
-       width="2.7924652"
-       height="8.4334164"
+       width="4.1556811"
+       height="7.4695611"
        id="page2"
        margin="0"
        bleed="0" />
@@ -48,14 +48,22 @@
      id="layer2"
      inkscape:label="Layer 2"
      style="stroke:#ff0000"
-     transform="translate(-84.957718,-11.940548)">
-    <path
-       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
-       d="m 85.352508,12.454531 h -0.2545 l -0.008,4.48554"
-       id="path31" />
-    <path
-       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
-       d="m 87.746386,12.072783 -0.27836,0.008 0.008,4.48554 c 0,0 0.02387,2.409785 -1.526992,3.706138"
-       id="path32" />
+     transform="translate(-89.463395,-12.796077)">
+    <g
+       id="g16">
+      <path
+         style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
+         d="m 89.464252,13.106684 3.694208,-0.02386 0.139178,-0.103389 0.13918,0.178945 -0.131225,0.111343 c 0,0 -0.38175,1.594594 -1.153198,2.596682"
+         id="path33"
+         sodipodi:nodetypes="cccccc"
+         inkscape:export-filename="C:\Users\Andreas\repos\p5stuff\matrixchars\15.svg"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <path
+         style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000"
+         d="m 91.746786,14.323506 -0.246544,0.008 -0.0159,2.441597 c 0,0 0.008,1.861022 -1.18501,3.411874"
+         id="path34"
+         sodipodi:nodetypes="cccc" />
+    </g>
   </g>
 </svg>
