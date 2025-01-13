@@ -10,7 +10,7 @@ CANVAS_HEIGHT = 297  # mm
 SVG_FOLDER = "./matrixchars"
 
 # Global scale factor for character size
-SCALE = 3  # Adjust this for consistent character size
+SCALE = 4  # Adjust this for consistent character size
 
 def load_svg_paths(folder):
     """Load SVG files and extract their paths."""
