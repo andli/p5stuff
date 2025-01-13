@@ -5,12 +5,12 @@ from svgwrite import Drawing  # For exporting to SVG
 # Define canvas dimensions in mm (A4 portrait)
 CANVAS_WIDTH = 210  # mm
 CANVAS_HEIGHT = 297  # mm
+PADDING = 10 # mm
+SCALE = 2.6
 
 # Folder containing your SVG files
 SVG_FOLDER = "./matrixchars"
 
-# Global scale factor for character size
-SCALE = 4  # Adjust this for consistent character size
 
 def load_svg_paths(folder):
     """Load SVG files and extract their paths."""
@@ -32,7 +32,7 @@ def export_to_svg(paths, canvas_width, canvas_height, filename="output.svg"):
                      size=(f"{canvas_width}mm", f"{canvas_height}mm"),
                      stroke="black", fill="none", stroke_width=0.5))  # 0.5mm outline
 
-    x_offset, y_offset = 5, 5  # Start position (10 mm margin)
+    x_offset, y_offset = PADDING, PADDING  # Start position (10 mm margin)
 
     for svg_paths in paths:
         # Calculate bounding box for spacing
@@ -57,7 +57,7 @@ def export_to_svg(paths, canvas_width, canvas_height, filename="output.svg"):
 
         # Wrap to the next row if the character goes off the canvas
         if x_offset + spacing_x > canvas_width:
-            x_offset = 10  # Reset to the left margin
+            x_offset = PADDING  # Reset to the left margin
             y_offset += spacing_y
 
     # Save the SVG file
