@@ -6,8 +6,10 @@ const CHOSEN_RATIO = MTG_RATIO;
 const CANVAS_WIDTH = 650;
 const CANVAS_HEIGHT = Math.round(CANVAS_WIDTH * CHOSEN_RATIO);
 
-const PEN_THICKNESS = 2; // Thickness of the pen used for drawing
-const CIRCLE_RADIUS = 1;
+const PEN_THICKNESS = 1.5; // Thickness of the pen used for drawing
+// Thickness examples:
+// STAEDTLER 0.3mm fineliner = 1.5
+
 // Enum for point styles
 const POINT_STYLE = {
   POINT: 0,
