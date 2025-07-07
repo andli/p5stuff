@@ -5,6 +5,20 @@ const MTG_RATIO = 1.3968;
 const CHOSEN_RATIO = MTG_RATIO;
 const CANVAS_WIDTH = 650;
 const CANVAS_HEIGHT = Math.round(CANVAS_WIDTH * CHOSEN_RATIO);
+
+const PEN_THICKNESS = 2; // Thickness of the pen used for drawing
+const CIRCLE_RADIUS = 1;
+// Enum for point styles
+const POINT_STYLE = {
+  POINT: 0,
+  CIRCLE: 1,
+  SWIRL: 2,
+};
+
+// Global point drawing settings
+let currentPointStyle = POINT_STYLE.CIRCLE;
+let currentPointRadius = CIRCLE_RADIUS;
+
 let randomHash;
 let seed;
 let randomizedHashString;
@@ -41,39 +55,95 @@ class Random {
 }
 
 /**
- * Draws a grid of circles with a specified rotation
- * @param {number} x - X coordinate of the grid center
- * @param {number} y - Y coordinate of the grid center
- * @param {number} cols - Number of columns in the grid
- * @param {number} rows - Number of rows in the grid
- * @param {number} cellSize - Size of each cell in the grid
- * @param {number} circleRadius - Radius of each circle
- * @param {number} angle - Angle in degrees to rotate the entire grid
+ * Draws a point at the specified coordinates using the current style
+ * @param {number} x - X coordinate of the point
+ * @param {number} y - Y coordinate of the point
  */
-function drawCircleGrid(x, y, cols, rows, cellSize, circleRadius, angle = 0) {
-  push();
-  translate(x, y);
-  rotate(radians(angle));
+function drawPoint(x, y) {
+  switch (currentPointStyle) {
+    case POINT_STYLE.POINT:
+      // Simple point/dot
+      point(x, y);
+      break;
 
-  // Calculate the grid dimensions
-  const gridWidth = cols * cellSize;
-  const gridHeight = rows * cellSize;
+    case POINT_STYLE.CIRCLE:
+      // Circle with specified radius
+      circle(x, y, currentPointRadius * 2);
+      break;
 
-  // Offset to center the grid
-  const offsetX = -gridWidth / 2;
-  const offsetY = -gridHeight / 2;
+    case POINT_STYLE.SWIRL:
+      // Draw a spiral that starts at center and moves outward counterclockwise
+      push();
+      translate(x, y);
 
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      // Calculate the position of each circle
-      const circleX = offsetX + i * cellSize + cellSize / 2;
-      const circleY = offsetY + j * cellSize + cellSize / 2;
+      // Number of complete revolutions
+      const revolutions = 2.5;
 
-      // Draw the circle
-      circle(circleX, circleY, circleRadius * 2);
-    }
+      // The growth factor ensures consistent spacing of PEN_THICKNESS between spiral arms
+      // This is what makes the spiral grow properly to maintain consistent spacing
+      const growthFactor = PEN_THICKNESS / (2 * PI);
+
+      // Total number of points to draw in the spiral
+      const numPoints = 80; // Increase point count for smoother spiral
+
+      // Max radius is based on the current point radius setting
+      const maxRadius = currentPointRadius;
+
+      // Start the spiral
+      beginShape();
+      noFill();
+
+      // Add first point at center
+      curveVertex(0, 0);
+      curveVertex(0, 0); // Repeat first point to ensure curve starts correctly
+
+      // Draw spiral points using an Archimedean spiral formula r = a + bθ
+      // This formula ensures consistent spacing between spiral arms equal to PEN_THICKNESS
+      for (let i = 0; i < numPoints; i++) {
+        // Map i to angle: as i increases, we get more revolutions
+        // We go counterclockwise, so we use negative angle
+        const angle = map(i, 0, numPoints - 1, 0, revolutions * TWO_PI);
+
+        // Archimedean spiral formula: radius grows proportionally to angle
+        // This ensures consistent spacing between spiral arms
+        const r = growthFactor * angle;
+
+        // Scale the radius to fit within our maximum radius
+        const scaledRadius = map(
+          r,
+          0,
+          growthFactor * revolutions * TWO_PI,
+          0,
+          maxRadius
+        );
+
+        // Calculate spiral point coordinates (counterclockwise)
+        // Using -angle for sin makes it go counterclockwise
+        const sx = scaledRadius * cos(angle);
+        const sy = scaledRadius * sin(angle);
+
+        curveVertex(sx, sy);
+      }
+
+      // Repeat last point to ensure smooth curve ending
+      const lastAngle = revolutions * TWO_PI;
+      const lastR = growthFactor * lastAngle;
+      const lastScaledRadius = map(
+        lastR,
+        0,
+        growthFactor * revolutions * TWO_PI,
+        0,
+        maxRadius
+      );
+      curveVertex(
+        lastScaledRadius * cos(lastAngle),
+        lastScaledRadius * sin(lastAngle)
+      );
+
+      endShape();
+      pop();
+      break;
   }
-  pop();
 }
 
 /**
@@ -82,18 +152,17 @@ function drawCircleGrid(x, y, cols, rows, cellSize, circleRadius, angle = 0) {
  * @param {number} y - Y coordinate of the grid center
  * @param {number} cols - Number of columns in the grid
  * @param {number} rows - Number of rows in the grid
- * @param {number} cellSize - Size of each cell in the grid
- * @param {number} pointWeight - Weight/thickness of each point
+ * @param {number} pointSpacing - Size of each cell in the grid
  * @param {number} angle - Angle in degrees to rotate the entire grid
  */
-function drawPointGrid(x, y, cols, rows, cellSize, angle = 0) {
+function drawPointGrid(x, y, cols, rows, pointSpacing, angle = 0) {
   push();
   translate(x, y);
   rotate(radians(angle));
 
   // Calculate the grid dimensions
-  const gridWidth = cols * cellSize;
-  const gridHeight = rows * cellSize;
+  const gridWidth = cols * pointSpacing;
+  const gridHeight = rows * pointSpacing;
 
   // Offset to center the grid
   const offsetX = -gridWidth / 2;
@@ -102,19 +171,27 @@ function drawPointGrid(x, y, cols, rows, cellSize, angle = 0) {
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       // Calculate the position of each point
-      const pointX = offsetX + i * cellSize + cellSize / 2;
-      const pointY = offsetY + j * cellSize + cellSize / 2;
+      const pointX = offsetX + i * pointSpacing + pointSpacing / 2;
+      const pointY = offsetY + j * pointSpacing + pointSpacing / 2;
 
-      // Draw the point
-      point(pointX, pointY);
+      // Draw the point using global style settings
+      drawPoint(pointX, pointY);
     }
   }
 
   pop();
 }
 
-function drawPointSquare(x, y, size, cellSize, angle) {
-  drawPointGrid(x, y, size, size, cellSize, angle);
+/**
+ * Helper function to draw a square grid of points
+ * @param {number} x - X coordinate of the center
+ * @param {number} y - Y coordinate of the center
+ * @param {number} size - Number of points in both dimensions
+ * @param {number} pointSpacing - Spacing between points
+ * @param {number} angle - Rotation angle in degrees
+ */
+function drawPointSquare(x, y, size, pointSpacing, angle) {
+  drawPointGrid(x, y, size, size, pointSpacing, angle);
 }
 
 /**
@@ -123,7 +200,6 @@ function drawPointSquare(x, y, size, cellSize, angle) {
  * @param {number} y - Y coordinate of the center
  * @param {number} numRings - Number of rings to draw
  * @param {number} spacing - Spacing between dots both radially and angularly
- * @param {number} pointWeight - Radius of each dot
  * @param {number} rotation - Rotation of the entire pattern in degrees
  *
  * Each ring starts at a random angle to prevent forming a straight "line"
@@ -135,7 +211,7 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
   rotate(radians(rotation));
 
   // Draw the center dot
-  point(0, 0);
+  drawPoint(0, 0);
 
   // For each ring
   for (let r = 1; r <= numRings; r++) {
@@ -167,12 +243,11 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
       const dotX = ringRadius * cos(angle);
       const dotY = ringRadius * sin(angle);
 
-      // Draw the dot
-      point(dotX, dotY);
+      // Draw the dot using global style settings
+      drawPoint(dotX, dotY);
     }
   }
-  // Restore the default stroke weight
-  strokeWeight(1);
+
   pop();
 }
 
@@ -181,28 +256,37 @@ function localSetup() {
 }
 
 function localDraw() {
-  circleRadius = 5;
-  circleSpacing = 10;
-  numCircles = 24;
-  numRings = 13;
-  strokeWeight(5);
+  const circleSpacing = 10; // Spacing between points
+  const numCircles = 24; // Grid size
+  const numRings = 13; // Number of rings for radial pattern
 
+  strokeWeight(PEN_THICKNESS);
+  noFill(); // Default to no fill for points
+
+  // Example: Points - simple dots
+  currentPointRadius = 1; // Set global point radius
+  currentPointStyle = POINT_STYLE.POINT;
   drawPointSquare(220, 220, numCircles, circleSpacing, 0);
+
+  // Example: Circles - small circles
+  currentPointRadius = 3; // Increase radius for circles
+  currentPointStyle = POINT_STYLE.CIRCLE;
   drawPointSquare(318, 352, numCircles, circleSpacing, 20);
-  /* drawPointSquare(
-    372,
-    540,
-    numCircles,
-    circleSpacing,
-    45
-  ); */
+
+  // Example: Swirls - spiral shapes
+  currentPointRadius = 8; // Larger radius for swirls to see the spiral pattern clearly
+  currentPointStyle = POINT_STYLE.SWIRL;
   drawRadialCircles(
     372, // x position (center)
     540, // y position (center)
-    numRings, // max radius of pattern
-    circleSpacing, // spacing between dots
+    numRings - 5, // fewer rings since swirls are larger
+    circleSpacing * 1.5, // increased spacing between swirls for better visibility
     0 // rotation angle (degrees)
   );
+
+  // You can mix styles in the same sketch
+  currentPointRadius = 2;
+  currentPointStyle = POINT_STYLE.CIRCLE;
   drawPointSquare(412, 682, numCircles, circleSpacing, 0);
 
   // Reset styles
