@@ -77,17 +77,21 @@ function drawPoint(x, y) {
       translate(x, y);
 
       // Number of complete revolutions
-      const revolutions = 2.5;
+      const revolutions = 2;
 
-      // The growth factor ensures consistent spacing of PEN_THICKNESS between spiral arms
-      // This is what makes the spiral grow properly to maintain consistent spacing
+      // Growth factor controls the spacing between spiral arms
+      // This is based only on PEN_THICKNESS to ensure consistent spacing
       const growthFactor = PEN_THICKNESS / (2 * PI);
 
-      // Total number of points to draw in the spiral
-      const numPoints = 80; // Increase point count for smoother spiral
+      // Calculate the final spiral radius that would result from the growth factor
+      const naturalFinalRadius = growthFactor * revolutions * TWO_PI;
 
-      // Max radius is based on the current point radius setting
-      const maxRadius = currentPointRadius;
+      // Calculate a scaling factor to achieve the target radius specified by currentPointRadius
+      // This ensures the spiral reaches exactly currentPointRadius at its maximum
+      const scalingRatio = currentPointRadius / naturalFinalRadius;
+
+      // Number of points to draw in the spiral (more points = smoother curve)
+      const numPoints = 40;
 
       // Start the spiral
       beginShape();
@@ -97,49 +101,37 @@ function drawPoint(x, y) {
       curveVertex(0, 0);
       curveVertex(0, 0); // Repeat first point to ensure curve starts correctly
 
-      // Draw spiral points using an Archimedean spiral formula r = a + bθ
-      // This formula ensures consistent spacing between spiral arms equal to PEN_THICKNESS
+      // Draw the spiral points using the Archimedean spiral formula
+      // r = b * θ where b is the growth factor
       for (let i = 0; i < numPoints; i++) {
-        // Map i to angle: as i increases, we get more revolutions
-        // We go counterclockwise, so we use negative angle
+        // Map i to angle (θ): gradually increase to create revolutions
         const angle = map(i, 0, numPoints - 1, 0, revolutions * TWO_PI);
 
-        // Archimedean spiral formula: radius grows proportionally to angle
-        // This ensures consistent spacing between spiral arms
-        const r = growthFactor * angle;
+        // Calculate the natural radius using the growth factor
+        // This creates a spiral where the distance between arms is consistent
+        const naturalRadius = growthFactor * angle;
 
-        // Scale the radius to fit within our maximum radius
-        const scaledRadius = map(
-          r,
-          0,
-          growthFactor * revolutions * TWO_PI,
-          0,
-          maxRadius
-        );
+        // Scale the radius to match the target final radius (currentPointRadius)
+        const scaledRadius = naturalRadius * scalingRatio;
 
-        // Calculate spiral point coordinates (counterclockwise)
-        // Using -angle for sin makes it go counterclockwise
+        // Calculate coordinates (x = r*cos(θ), y = r*sin(θ))
         const sx = scaledRadius * cos(angle);
         const sy = scaledRadius * sin(angle);
 
+        // Add point to the curve
         curveVertex(sx, sy);
       }
 
-      // Repeat last point to ensure smooth curve ending
+      // Add final point to ensure smooth ending
       const lastAngle = revolutions * TWO_PI;
-      const lastR = growthFactor * lastAngle;
-      const lastScaledRadius = map(
-        lastR,
-        0,
-        growthFactor * revolutions * TWO_PI,
-        0,
-        maxRadius
-      );
+      const lastNaturalRadius = growthFactor * lastAngle;
+      const lastScaledRadius = lastNaturalRadius * scalingRatio;
       curveVertex(
         lastScaledRadius * cos(lastAngle),
         lastScaledRadius * sin(lastAngle)
       );
 
+      // Close the shape
       endShape();
       pop();
       break;
@@ -251,6 +243,8 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
   pop();
 }
 
+function testPen() {}
+
 function localSetup() {
   // your setup code goes here
 }
@@ -269,18 +263,18 @@ function localDraw() {
   drawPointSquare(220, 220, numCircles, circleSpacing, 0);
 
   // Example: Circles - small circles
-  currentPointRadius = 3; // Increase radius for circles
+  currentPointRadius = 10; // Increase radius for circles
   currentPointStyle = POINT_STYLE.CIRCLE;
   drawPointSquare(318, 352, numCircles, circleSpacing, 20);
 
   // Example: Swirls - spiral shapes
-  currentPointRadius = 8; // Larger radius for swirls to see the spiral pattern clearly
   currentPointStyle = POINT_STYLE.SWIRL;
+  currentPointRadius = 10; // This directly controls the final radius of each spiral
   drawRadialCircles(
     372, // x position (center)
     540, // y position (center)
-    numRings - 5, // fewer rings since swirls are larger
-    circleSpacing * 1.5, // increased spacing between swirls for better visibility
+    numRings - 7, // fewer rings since swirls are larger
+    circleSpacing * 2.5, // increased spacing between spirals for better visibility
     0 // rotation angle (degrees)
   );
 
