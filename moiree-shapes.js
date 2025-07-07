@@ -15,10 +15,6 @@ const POINT_STYLE = {
   SWIRL: 2,
 };
 
-// Global point drawing settings
-let currentPointStyle = POINT_STYLE.CIRCLE;
-let currentPointRadius = CIRCLE_RADIUS;
-
 let randomHash;
 let seed;
 let randomizedHashString;
@@ -59,8 +55,8 @@ class Random {
  * @param {number} x - X coordinate of the point
  * @param {number} y - Y coordinate of the point
  */
-function drawPoint(x, y) {
-  switch (currentPointStyle) {
+function drawPoint(x, y, radius, style) {
+  switch (style) {
     case POINT_STYLE.POINT:
       // Simple point/dot
       point(x, y);
@@ -68,7 +64,7 @@ function drawPoint(x, y) {
 
     case POINT_STYLE.CIRCLE:
       // Circle with specified radius
-      circle(x, y, currentPointRadius * 2);
+      circle(x, y, radius * 2);
       break;
 
     case POINT_STYLE.SWIRL:
@@ -86,9 +82,9 @@ function drawPoint(x, y) {
       // Calculate the final spiral radius that would result from the growth factor
       const naturalFinalRadius = growthFactor * revolutions * TWO_PI;
 
-      // Calculate a scaling factor to achieve the target radius specified by currentPointRadius
-      // This ensures the spiral reaches exactly currentPointRadius at its maximum
-      const scalingRatio = currentPointRadius / naturalFinalRadius;
+      // Calculate a scaling factor to achieve the target radius specified by radius
+      // This ensures the spiral reaches exactly radius at its maximum
+      const scalingRatio = radius / naturalFinalRadius;
 
       // Number of points to draw in the spiral (more points = smoother curve)
       const numPoints = 40;
@@ -111,7 +107,7 @@ function drawPoint(x, y) {
         // This creates a spiral where the distance between arms is consistent
         const naturalRadius = growthFactor * angle;
 
-        // Scale the radius to match the target final radius (currentPointRadius)
+        // Scale the radius to match the target final radius (radius)
         const scaledRadius = naturalRadius * scalingRatio;
 
         // Calculate coordinates (x = r*cos(θ), y = r*sin(θ))
@@ -147,7 +143,16 @@ function drawPoint(x, y) {
  * @param {number} pointSpacing - Size of each cell in the grid
  * @param {number} angle - Angle in degrees to rotate the entire grid
  */
-function drawPointGrid(x, y, cols, rows, pointSpacing, angle = 0) {
+function drawPointGrid(
+  x,
+  y,
+  cols,
+  rows,
+  pointSpacing,
+  pointRadius,
+  angle = 0,
+  style = POINT_STYLE.POINT
+) {
   push();
   translate(x, y);
   rotate(radians(angle));
@@ -167,23 +172,11 @@ function drawPointGrid(x, y, cols, rows, pointSpacing, angle = 0) {
       const pointY = offsetY + j * pointSpacing + pointSpacing / 2;
 
       // Draw the point using global style settings
-      drawPoint(pointX, pointY);
+      drawPoint(pointX, pointY, pointRadius, style);
     }
   }
 
   pop();
-}
-
-/**
- * Helper function to draw a square grid of points
- * @param {number} x - X coordinate of the center
- * @param {number} y - Y coordinate of the center
- * @param {number} size - Number of points in both dimensions
- * @param {number} pointSpacing - Spacing between points
- * @param {number} angle - Rotation angle in degrees
- */
-function drawPointSquare(x, y, size, pointSpacing, angle) {
-  drawPointGrid(x, y, size, size, pointSpacing, angle);
 }
 
 /**
@@ -243,29 +236,38 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
   pop();
 }
 
-function testPen() {}
+function testPen() {
+  const circleSpacing = 10; // Spacing between points
+  const numCircles = 24; // Grid size
+
+  drawPointGrid(100, 50, 10, 2, circleSpacing, 6, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(250, 50, 10, 2, circleSpacing, 5, 0, POINT_STYLE.CIRCLE);
+  drawPointGrid(400, 50, 10, 2, circleSpacing, 6, 0, POINT_STYLE.POINT);
+}
 
 function localSetup() {
-  // your setup code goes here
+  noLoop();
+  background(240, 240, 240);
+  stroke(0);
+  noFill();
+  strokeWeight(PEN_THICKNESS);
 }
 
 function localDraw() {
-  const circleSpacing = 10; // Spacing between points
+  testPen();
+  /* const circleSpacing = 10; // Spacing between points
   const numCircles = 24; // Grid size
   const numRings = 13; // Number of rings for radial pattern
-
-  strokeWeight(PEN_THICKNESS);
-  noFill(); // Default to no fill for points
 
   // Example: Points - simple dots
   currentPointRadius = 1; // Set global point radius
   currentPointStyle = POINT_STYLE.POINT;
-  drawPointSquare(220, 220, numCircles, circleSpacing, 0);
+  drawPointGrid(220, 220, numCircles, numCircles, circleSpacing, 0);
 
   // Example: Circles - small circles
   currentPointRadius = 10; // Increase radius for circles
   currentPointStyle = POINT_STYLE.CIRCLE;
-  drawPointSquare(318, 352, numCircles, circleSpacing, 20);
+  drawPointGrid(318, 352, numCircles, numCircles, circleSpacing, 20);
 
   // Example: Swirls - spiral shapes
   currentPointStyle = POINT_STYLE.SWIRL;
@@ -281,11 +283,11 @@ function localDraw() {
   // You can mix styles in the same sketch
   currentPointRadius = 2;
   currentPointStyle = POINT_STYLE.CIRCLE;
-  drawPointSquare(412, 682, numCircles, circleSpacing, 0);
+  drawPointGrid(412, 682, numCircles, numCircles, circleSpacing, 0);
 
   // Reset styles
   stroke(0);
-  noFill();
+  noFill(); */
 }
 
 function setup() {
@@ -309,12 +311,6 @@ function setup() {
 }
 
 function draw() {
-  noLoop();
-  stroke(0);
-  background(240, 240, 240);
-  strokeWeight(8.5);
-  noFill();
-
   localDraw();
 
   if (RENDER_SVG) {
