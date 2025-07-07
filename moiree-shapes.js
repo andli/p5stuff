@@ -69,27 +69,19 @@ function drawPoint(x, y, radius, style) {
 
     case POINT_STYLE.SWIRL:
       // Draw a spiral that starts at center and moves outward counterclockwise
+      // Then wraps back to create a circular appearance
       push();
       translate(x, y);
 
-      // Number of complete revolutions
-      const revolutions = 2;
-
-      // For a true Archimedean spiral with consistent arm spacing,
-      // we need to use the proper formula: r = a + bθ
-      // where 'a' is the starting radius (0 in our case)
-      // and 'b' is the distance between successive turnings
-
       // Set target radius to match the circle radius exactly
-      const targetRadius = radius; // Exact match to the circle radius parameter
+      const targetRadius = radius;
 
       // Calculate 'b' parameter for the spiral
-      // For an Archimedean spiral to have exactly PEN_THICKNESS spacing between arms,
-      // we set b = PEN_THICKNESS/(2π)
+      // For an Archimedean spiral to have exactly PEN_THICKNESS spacing between arms
       const b = PEN_THICKNESS / (2 * PI);
 
       // Number of points to draw in the spiral (more points = smoother curve)
-      const numPoints = 60; // Increased for smoother curves
+      const numPoints = 100; // Increased for smoother curves
 
       // Start the spiral
       beginShape();
@@ -103,16 +95,28 @@ function drawPoint(x, y, radius, style) {
       // Using the formula r = b*θ, we get θ = r/b
       const maxTheta = targetRadius / b;
 
-      // Draw the spiral points using the proper Archimedean spiral formula
-      for (let i = 0; i < numPoints; i++) {
-        // Map i to theta value
-        const theta = map(i, 0, numPoints - 1, 0, maxTheta);
+      // The wrap-back should always be a consistent portion of the final revolution
+      // Reserve the last 25% of the final revolution for the wrap-back
+      const finalRevolutionFraction = 0.25; // 25% of final revolution for wrap-back
+
+      // Calculate theta for main spiral (excluding wrap-back portion)
+      const mainSpiralTheta = maxTheta - TWO_PI * finalRevolutionFraction;
+
+      // Calculate how many points to use for main spiral vs wrap-back
+      // Allocate points proportionally to the angle coverage
+      const mainSpiralPoints = Math.floor(
+        numPoints * (mainSpiralTheta / maxTheta)
+      );
+
+      // Draw the main spiral points using the proper Archimedean spiral formula
+      for (let i = 0; i < mainSpiralPoints; i++) {
+        // Map i to theta value for the outward spiral
+        const theta = map(i, 0, mainSpiralPoints - 1, 0, mainSpiralTheta);
 
         // Archimedean spiral formula: r = bθ
-        // This ensures truly consistent spacing between spiral arms
         const r = b * theta;
 
-        // Calculate coordinates (x = r*cos(θ), y = r*sin(θ))
+        // Calculate coordinates
         const sx = r * cos(theta);
         const sy = r * sin(theta);
 
@@ -120,10 +124,47 @@ function drawPoint(x, y, radius, style) {
         curveVertex(sx, sy);
       }
 
-      // Add final point to ensure smooth ending
+      // Now add the wrap-back points for the final portion of the revolution
+      // These will curve back toward the spiral, creating a smoother transition
+      const wrapPoints = numPoints - mainSpiralPoints;
+
+      // Starting values for the wrap-back
+      const startWrapTheta = mainSpiralTheta;
+      const startWrapRadius = b * startWrapTheta;
+      const startWrapAngle = startWrapTheta % TWO_PI; // Get the angle in the 0-2π range
+
+      // Final values at the maximum extent
       const finalTheta = maxTheta;
       const finalRadius = b * finalTheta;
-      curveVertex(finalRadius * cos(finalTheta), finalRadius * sin(finalTheta));
+      const finalAngle = finalTheta % TWO_PI; // Get the final angle in the 0-2π range
+
+      // Create a smooth curve that wraps back toward the spiral
+      for (let i = 0; i < wrapPoints; i++) {
+        // Normalize i to 0-1 range
+        const t = i / (wrapPoints - 1);
+
+        // Start from where the main spiral ended and wrap back toward 90% of the spiral's radius
+        // The wrap effect is stronger as t increases (square function makes it more gradual at start)
+        const wrapRadius = startWrapRadius - t * t * 0.2 * startWrapRadius;
+
+        // Continue angular motion through the last portion of the final revolution
+        // This maps t from 0-1 to the remaining angular portion of the final revolution
+        const wrapAngle = startWrapAngle + t * TWO_PI * finalRevolutionFraction;
+
+        // Calculate coordinates
+        const wx = wrapRadius * cos(wrapAngle);
+        const wy = wrapRadius * sin(wrapAngle);
+
+        curveVertex(wx, wy);
+      }
+
+      // Add one more control point to ensure smooth ending
+      const lastWrapRadius = startWrapRadius * 0.8; // End at 80% of the spiral's radius
+      const lastWrapAngle = startWrapAngle + TWO_PI * finalRevolutionFraction;
+      curveVertex(
+        lastWrapRadius * cos(lastWrapAngle),
+        lastWrapRadius * sin(lastWrapAngle)
+      );
 
       // Close the shape
       endShape();
