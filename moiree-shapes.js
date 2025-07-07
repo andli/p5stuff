@@ -6,7 +6,7 @@ const CHOSEN_RATIO = MTG_RATIO;
 const CANVAS_WIDTH = 650;
 const CANVAS_HEIGHT = Math.round(CANVAS_WIDTH * CHOSEN_RATIO);
 
-const PEN_THICKNESS = 2; // Thickness of the pen used for drawing
+const PEN_THICKNESS = 3; // Thickness of the pen used for drawing
 const CIRCLE_RADIUS = 1;
 // Enum for point styles
 const POINT_STYLE = {
@@ -75,19 +75,21 @@ function drawPoint(x, y, radius, style) {
       // Number of complete revolutions
       const revolutions = 2;
 
-      // Growth factor controls the spacing between spiral arms
-      // This is based only on PEN_THICKNESS to ensure consistent spacing
-      const growthFactor = PEN_THICKNESS / (2 * PI);
+      // For a true Archimedean spiral with consistent arm spacing,
+      // we need to use the proper formula: r = a + bθ
+      // where 'a' is the starting radius (0 in our case)
+      // and 'b' is the distance between successive turnings
 
-      // Calculate the final spiral radius that would result from the growth factor
-      const naturalFinalRadius = growthFactor * revolutions * TWO_PI;
+      // Set target radius to match the circle radius exactly
+      const targetRadius = radius; // Exact match to the circle radius parameter
 
-      // Calculate a scaling factor to achieve the target radius specified by radius
-      // This ensures the spiral reaches exactly radius at its maximum
-      const scalingRatio = radius / naturalFinalRadius;
+      // Calculate 'b' parameter for the spiral
+      // For an Archimedean spiral to have exactly PEN_THICKNESS spacing between arms,
+      // we set b = PEN_THICKNESS/(2π)
+      const b = PEN_THICKNESS / (2 * PI);
 
       // Number of points to draw in the spiral (more points = smoother curve)
-      const numPoints = 40;
+      const numPoints = 60; // Increased for smoother curves
 
       // Start the spiral
       beginShape();
@@ -97,35 +99,31 @@ function drawPoint(x, y, radius, style) {
       curveVertex(0, 0);
       curveVertex(0, 0); // Repeat first point to ensure curve starts correctly
 
-      // Draw the spiral points using the Archimedean spiral formula
-      // r = b * θ where b is the growth factor
+      // Calculate the maximum theta value needed to reach our target radius
+      // Using the formula r = b*θ, we get θ = r/b
+      const maxTheta = targetRadius / b;
+
+      // Draw the spiral points using the proper Archimedean spiral formula
       for (let i = 0; i < numPoints; i++) {
-        // Map i to angle (θ): gradually increase to create revolutions
-        const angle = map(i, 0, numPoints - 1, 0, revolutions * TWO_PI);
+        // Map i to theta value
+        const theta = map(i, 0, numPoints - 1, 0, maxTheta);
 
-        // Calculate the natural radius using the growth factor
-        // This creates a spiral where the distance between arms is consistent
-        const naturalRadius = growthFactor * angle;
-
-        // Scale the radius to match the target final radius (radius)
-        const scaledRadius = naturalRadius * scalingRatio;
+        // Archimedean spiral formula: r = bθ
+        // This ensures truly consistent spacing between spiral arms
+        const r = b * theta;
 
         // Calculate coordinates (x = r*cos(θ), y = r*sin(θ))
-        const sx = scaledRadius * cos(angle);
-        const sy = scaledRadius * sin(angle);
+        const sx = r * cos(theta);
+        const sy = r * sin(theta);
 
         // Add point to the curve
         curveVertex(sx, sy);
       }
 
       // Add final point to ensure smooth ending
-      const lastAngle = revolutions * TWO_PI;
-      const lastNaturalRadius = growthFactor * lastAngle;
-      const lastScaledRadius = lastNaturalRadius * scalingRatio;
-      curveVertex(
-        lastScaledRadius * cos(lastAngle),
-        lastScaledRadius * sin(lastAngle)
-      );
+      const finalTheta = maxTheta;
+      const finalRadius = b * finalTheta;
+      curveVertex(finalRadius * cos(finalTheta), finalRadius * sin(finalTheta));
 
       // Close the shape
       endShape();
@@ -190,7 +188,15 @@ function drawPointGrid(
  * Each ring starts at a random angle to prevent forming a straight "line"
  * of dots through the circle pattern
  */
-function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
+function drawRadialPoints(
+  x,
+  y,
+  numRings,
+  pointSpacing,
+  pointRadius,
+  rotation = 0,
+  style = POINT_STYLE.POINT
+) {
   push();
   translate(x, y);
   rotate(radians(rotation));
@@ -201,13 +207,13 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
   // For each ring
   for (let r = 1; r <= numRings; r++) {
     // Current ring radius
-    const ringRadius = r * spacing;
+    const ringRadius = r * pointSpacing;
 
     // Calculate circumference of this ring
     const circumference = 2 * PI * ringRadius;
 
     // Calculate how many dots will fit in this ring with the given spacing
-    const dotsInRing = Math.floor(circumference / spacing);
+    const dotsInRing = Math.floor(circumference / pointSpacing);
 
     // Don't draw rings with less than 3 dots
     if (dotsInRing < 3) continue;
@@ -229,7 +235,7 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
       const dotY = ringRadius * sin(angle);
 
       // Draw the dot using global style settings
-      drawPoint(dotX, dotY);
+      drawPoint(dotX, dotY, pointRadius, style);
     }
   }
 
@@ -237,12 +243,24 @@ function drawRadialCircles(x, y, numRings, spacing, rotation = 0) {
 }
 
 function testPen() {
-  const circleSpacing = 10; // Spacing between points
-  const numCircles = 24; // Grid size
+  const pointSpacing = 24; // Spacing between points
 
-  drawPointGrid(100, 50, 10, 2, circleSpacing, 6, 0, POINT_STYLE.SWIRL);
-  drawPointGrid(250, 50, 10, 2, circleSpacing, 5, 0, POINT_STYLE.CIRCLE);
-  drawPointGrid(400, 50, 10, 2, circleSpacing, 6, 0, POINT_STYLE.POINT);
+  // Reset style for drawing points
+  noFill();
+  stroke(0);
+  strokeWeight(0.3);
+
+  // Row 1: Small (radius 3)
+  drawPointGrid(100, 90, 5, 1, pointSpacing, 3, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(240, 90, 5, 1, pointSpacing, 3, 0, POINT_STYLE.CIRCLE);
+
+  // Row 2: Medium (radius 6)
+  drawPointGrid(100, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(240, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.CIRCLE);
+
+  // Row 3: Large (radius 10)
+  drawPointGrid(100, 160, 5, 1, pointSpacing, 10, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(240, 160, 5, 1, pointSpacing, 10, 0, POINT_STYLE.CIRCLE);
 }
 
 function localSetup() {
@@ -272,7 +290,7 @@ function localDraw() {
   // Example: Swirls - spiral shapes
   currentPointStyle = POINT_STYLE.SWIRL;
   currentPointRadius = 10; // This directly controls the final radius of each spiral
-  drawRadialCircles(
+  drawRadialPoints(
     372, // x position (center)
     540, // y position (center)
     numRings - 7, // fewer rings since swirls are larger
