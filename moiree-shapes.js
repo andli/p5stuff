@@ -1,4 +1,4 @@
-const RENDER_SVG = false;
+let RENDER_SVG = false; // Will be configurable via URL parameter
 const A_PAPER_SCALE = 1.414;
 const GOLDEN_RATIO = 1.61803398875;
 const MTG_RATIO = 1.3968;
@@ -6,7 +6,7 @@ const CHOSEN_RATIO = MTG_RATIO;
 const CANVAS_WIDTH = 650;
 const CANVAS_HEIGHT = Math.round(CANVAS_WIDTH * CHOSEN_RATIO);
 
-const PEN_THICKNESS = 3; // Thickness of the pen used for drawing
+const PEN_THICKNESS = 2; // Thickness of the pen used for drawing
 const CIRCLE_RADIUS = 1;
 // Enum for point styles
 const POINT_STYLE = {
@@ -251,21 +251,28 @@ function testPen() {
   strokeWeight(0.3);
 
   // Row 1: Small (radius 3)
+  drawPointGrid(100, 50, 5, 1, pointSpacing, 1, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(240, 50, 5, 1, pointSpacing, 1, 0, POINT_STYLE.CIRCLE);
+
+  // Row 1: Small (radius 3)
+  drawPointGrid(100, 70, 5, 1, pointSpacing, 2, 0, POINT_STYLE.SWIRL);
+  drawPointGrid(240, 70, 5, 1, pointSpacing, 2, 0, POINT_STYLE.CIRCLE);
+
+  // Row 1: Small (radius 3)
   drawPointGrid(100, 90, 5, 1, pointSpacing, 3, 0, POINT_STYLE.SWIRL);
   drawPointGrid(240, 90, 5, 1, pointSpacing, 3, 0, POINT_STYLE.CIRCLE);
 
   // Row 2: Medium (radius 6)
   drawPointGrid(100, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.SWIRL);
   drawPointGrid(240, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.CIRCLE);
-
-  // Row 3: Large (radius 10)
-  drawPointGrid(100, 160, 5, 1, pointSpacing, 10, 0, POINT_STYLE.SWIRL);
-  drawPointGrid(240, 160, 5, 1, pointSpacing, 10, 0, POINT_STYLE.CIRCLE);
 }
 
 function localSetup() {
   noLoop();
-  background(240, 240, 240);
+  // Skip background for SVG export to avoid creating a background rectangle
+  if (!RENDER_SVG) {
+    background(240, 240, 240);
+  }
   stroke(0);
   noFill();
   strokeWeight(PEN_THICKNESS);
@@ -318,9 +325,39 @@ function setup() {
   noiseSeed(seed);
   randomSeed(seed);
 
+  // Allow SVG rendering to be enabled via URL parameter
+  if (params.svg === "true" || params.svg === "1") {
+    RENDER_SVG = true;
+  }
+
   // Now that the p5.svg library is loaded, we can use SVG rendering
   if (RENDER_SVG) {
+    // Create canvas with SVG renderer
     createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT, SVG);
+
+    // Set initial drawing style to prevent automatic background
+    clear(); // Ensure no background is drawn
+
+    // Access the actual SVG element via _renderer
+    const pg = window._renderer;
+    if (pg && pg.svg) {
+      // Set A4 paper size attributes (210mm x 297mm)
+      pg.svg.setAttribute("width", "210mm");
+      pg.svg.setAttribute("height", "297mm");
+
+      // Set viewBox to maintain the drawing proportions
+      pg.svg.setAttribute("viewBox", `0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}`);
+
+      // Add Inkscape namespace
+      pg.svg.setAttribute(
+        "xmlns:inkscape",
+        "http://www.inkscape.org/namespaces/inkscape"
+      );
+      pg.svg.setAttribute(
+        "xmlns:sodipodi",
+        "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+      );
+    }
   } else {
     createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
   }
@@ -332,6 +369,63 @@ function draw() {
   localDraw();
 
   if (RENDER_SVG) {
-    save("moiree-shapes.svg");
+    // Before saving, adjust the SVG structure to create an Inkscape layer
+    // p5.js SVG renderer provides access to the SVG element via _renderer
+    const pg = window._renderer;
+    if (pg && pg.svg) {
+      // Find the main group that p5.svg creates to hold all elements
+      // This is typically the first g element
+      let mainGroup = pg.svg.querySelector("g");
+
+      // Find and remove any background rectangles
+      // These are typically the first rect elements in the SVG
+      const rects = pg.svg.querySelectorAll("rect");
+      rects.forEach((rect) => {
+        // Check if this is likely a background/canvas rectangle
+        // (usually has width/height matching the canvas dimensions)
+        const w = parseFloat(rect.getAttribute("width") || "0");
+        const h = parseFloat(rect.getAttribute("height") || "0");
+
+        // If dimensions match canvas or it has no stroke and a fill, it's likely a background
+        if (
+          (Math.abs(w - CANVAS_WIDTH) < 1 && Math.abs(h - CANVAS_HEIGHT) < 1) ||
+          (rect.getAttribute("stroke") === "none" && rect.getAttribute("fill"))
+        ) {
+          rect.parentNode.removeChild(rect);
+        }
+      });
+
+      if (mainGroup) {
+        // Set Inkscape layer attributes
+        mainGroup.setAttribute("inkscape:groupmode", "layer");
+        mainGroup.setAttribute("inkscape:label", "Drawing Layer");
+
+        // Make sure the group is directly under the SVG (not nested in other groups)
+        // This effectively "ungroups" it from any parent groups
+        if (mainGroup.parentElement !== pg.svg) {
+          pg.svg.appendChild(mainGroup);
+        }
+
+        // Remove any background rectangle from the group too
+        const groupRects = mainGroup.querySelectorAll("rect");
+        groupRects.forEach((rect) => {
+          const w = parseFloat(rect.getAttribute("width") || "0");
+          const h = parseFloat(rect.getAttribute("height") || "0");
+
+          if (
+            (Math.abs(w - CANVAS_WIDTH) < 1 &&
+              Math.abs(h - CANVAS_HEIGHT) < 1) ||
+            (rect.getAttribute("stroke") === "none" &&
+              rect.getAttribute("fill"))
+          ) {
+            mainGroup.removeChild(rect);
+          }
+        });
+      }
+    }
+
+    // Create timestamped filename for SVG output
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    save(`moiree-shapes-${timestamp}.svg`);
   }
 }
