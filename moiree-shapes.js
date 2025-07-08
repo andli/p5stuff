@@ -16,9 +16,9 @@ const PEN_THICKNESS = 4; // Thickness of the pen used for drawing
 
 // Enum for point styles
 const POINT_STYLE = {
-  POINT: 0,  // Minimal point - renders as tiny ellipse in SVG for Inkscape visibility
+  POINT: 0, // Minimal point - renders as tiny ellipse in SVG for Inkscape visibility
   CIRCLE: 1, // Standard circle with specified radius
-  SWIRL: 2,  // Archimedean spiral with wrap-back effect
+  SWIRL: 2, // Archimedean spiral with wrap-back effect
 };
 
 let randomHash;
@@ -68,7 +68,7 @@ function drawPoint(x, y, radius, style) {
     case POINT_STYLE.POINT:
       // Simple point/dot that's visible in Inkscape but plotter-friendly
       push(); // Save current drawing settings
-      
+
       if (RENDER_SVG) {
         // Special handling for SVG output
         // We'll create a minimal dot using a tiny ellipse for Inkscape visibility
@@ -80,7 +80,7 @@ function drawPoint(x, y, radius, style) {
         // For screen rendering, use the standard point function
         point(x, y);
       }
-      
+
       pop(); // Restore previous drawing settings
       break;
 
