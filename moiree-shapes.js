@@ -1,20 +1,24 @@
 let RENDER_SVG = false; // Will be configurable via URL parameter
 const A_PAPER_SCALE = 1.414;
+
+// NOTE: POINT_STYLE.POINT uses a tiny ellipse (0.4mm) when rendering to SVG
+// This ensures dots are visible in Inkscape while remaining plotter-friendly
+// without causing ink bleeding or excessive pen dwell
 const GOLDEN_RATIO = 1.61803398875;
 const MTG_RATIO = 1.3968;
 const CHOSEN_RATIO = MTG_RATIO;
 const CANVAS_WIDTH = 650;
 const CANVAS_HEIGHT = Math.round(CANVAS_WIDTH * CHOSEN_RATIO);
 
-const PEN_THICKNESS = 1.5; // Thickness of the pen used for drawing
+const PEN_THICKNESS = 4; // Thickness of the pen used for drawing
 // Thickness examples:
 // STAEDTLER 0.3mm fineliner = 1.5
 
 // Enum for point styles
 const POINT_STYLE = {
-  POINT: 0,
-  CIRCLE: 1,
-  SWIRL: 2,
+  POINT: 0,  // Minimal point - renders as tiny ellipse in SVG for Inkscape visibility
+  CIRCLE: 1, // Standard circle with specified radius
+  SWIRL: 2,  // Archimedean spiral with wrap-back effect
 };
 
 let randomHash;
@@ -56,12 +60,28 @@ class Random {
  * Draws a point at the specified coordinates using the current style
  * @param {number} x - X coordinate of the point
  * @param {number} y - Y coordinate of the point
+ * @param {number} radius - Radius for circle or swirl styles
+ * @param {number} style - Style of the point (POINT, CIRCLE, SWIRL)
  */
 function drawPoint(x, y, radius, style) {
   switch (style) {
     case POINT_STYLE.POINT:
-      // Simple point/dot
-      point(x, y);
+      // Simple point/dot that's visible in Inkscape but plotter-friendly
+      push(); // Save current drawing settings
+      
+      if (RENDER_SVG) {
+        // Special handling for SVG output
+        // We'll create a minimal dot using a tiny ellipse for Inkscape visibility
+        // This is more reliable for SVG editors than point() which may not render
+        noFill();
+        strokeWeight(0.2); // Minimal stroke weight that's still visible in Inkscape
+        ellipse(x, y, 0.4, 0.4); // Very tiny ellipse that plots as a single point
+      } else {
+        // For screen rendering, use the standard point function
+        point(x, y);
+      }
+      
+      pop(); // Restore previous drawing settings
       break;
 
     case POINT_STYLE.CIRCLE:
@@ -182,6 +202,8 @@ function drawPoint(x, y, radius, style) {
  * @param {number} cols - Number of columns in the grid
  * @param {number} rows - Number of rows in the grid
  * @param {number} pointSpacing - Size of each cell in the grid
+ * @param {number} pointRadius - Radius of the points to draw
+ * @param {number} style - Style of the points (POINT, CIRCLE, SWIRL)
  * @param {number} angle - Angle in degrees to rotate the entire grid
  */
 function drawPointGrid(
@@ -191,8 +213,8 @@ function drawPointGrid(
   rows,
   pointSpacing,
   pointRadius,
-  angle = 0,
-  style = POINT_STYLE.POINT
+  style,
+  angle = 0
 ) {
   push();
   translate(x, y);
@@ -225,8 +247,10 @@ function drawPointGrid(
  * @param {number} x - X coordinate of the center
  * @param {number} y - Y coordinate of the center
  * @param {number} numRings - Number of rings to draw
- * @param {number} spacing - Spacing between dots both radially and angularly
+ * @param {number} pointSpacing - Spacing between dots both radially and angularly
+ * @param {number} pointRadius - Radius of the points to draw
  * @param {number} rotation - Rotation of the entire pattern in degrees
+ * @param {number} style - Style of the points (POINT, CIRCLE, SWIRL)
  *
  * Each ring starts at a random angle to prevent forming a straight "line"
  * of dots through the circle pattern
@@ -237,8 +261,8 @@ function drawRadialPoints(
   numRings,
   pointSpacing,
   pointRadius,
-  rotation = 0,
-  style = POINT_STYLE.POINT
+  style = POINT_STYLE.POINT,
+  rotation = 0
 ) {
   push();
   translate(x, y);
@@ -285,7 +309,21 @@ function drawRadialPoints(
   pop();
 }
 
-function testPen() {
+function testPenPoints() {
+  // Reset style for drawing points
+  noFill();
+  stroke(0);
+  strokeWeight(3);
+
+  drawPointGrid(100, 50, 5, 2, 12, 1, 0, POINT_STYLE.POINT);
+  drawPointGrid(200, 50, 5, 2, 18, 1, 0, POINT_STYLE.POINT);
+  drawPointGrid(330, 50, 5, 2, 24, 1, 0, POINT_STYLE.POINT);
+
+  stroke(0);
+  strokeWeight(0.3);
+}
+
+function testPenCircles() {
   const pointSpacing = 24; // Spacing between points
 
   // Reset style for drawing points
@@ -308,6 +346,10 @@ function testPen() {
   // Row 2: Medium (radius 6)
   drawPointGrid(100, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.SWIRL);
   drawPointGrid(240, 120, 5, 1, pointSpacing, 6, 0, POINT_STYLE.CIRCLE);
+
+  noFill();
+  stroke(0);
+  strokeWeight(0.3);
 }
 
 function localSetup() {
@@ -322,40 +364,59 @@ function localSetup() {
 }
 
 function localDraw() {
-  testPen();
-  /* const circleSpacing = 10; // Spacing between points
+  noFill();
+  stroke(0);
+  // testPenPoints();
+  const circleSpacing = 10; // Spacing between points
   const numCircles = 24; // Grid size
   const numRings = 13; // Number of rings for radial pattern
-
-  // Example: Points - simple dots
-  currentPointRadius = 1; // Set global point radius
-  currentPointStyle = POINT_STYLE.POINT;
-  drawPointGrid(220, 220, numCircles, numCircles, circleSpacing, 0);
-
-  // Example: Circles - small circles
+  strokeWeight(PEN_THICKNESS);
+  currentPointStyle = POINT_STYLE.POINT; // Default point style
   currentPointRadius = 10; // Increase radius for circles
-  currentPointStyle = POINT_STYLE.CIRCLE;
-  drawPointGrid(318, 352, numCircles, numCircles, circleSpacing, 20);
 
-  // Example: Swirls - spiral shapes
-  currentPointStyle = POINT_STYLE.SWIRL;
-  currentPointRadius = 10; // This directly controls the final radius of each spiral
-  drawRadialPoints(
-    372, // x position (center)
-    540, // y position (center)
-    numRings - 7, // fewer rings since swirls are larger
-    circleSpacing * 2.5, // increased spacing between spirals for better visibility
-    0 // rotation angle (degrees)
+  drawPointGrid(
+    220,
+    220,
+    numCircles,
+    numCircles,
+    circleSpacing,
+    currentPointRadius,
+    currentPointStyle
   );
 
-  // You can mix styles in the same sketch
-  currentPointRadius = 2;
-  currentPointStyle = POINT_STYLE.CIRCLE;
-  drawPointGrid(412, 682, numCircles, numCircles, circleSpacing, 0);
+  drawPointGrid(
+    318,
+    352,
+    numCircles,
+    numCircles,
+    circleSpacing,
+    currentPointRadius,
+    currentPointStyle,
+    20
+  );
+
+  drawRadialPoints(
+    372,
+    540,
+    numRings,
+    circleSpacing,
+    currentPointRadius,
+    currentPointStyle
+  );
+
+  drawPointGrid(
+    412,
+    682,
+    numCircles,
+    numCircles,
+    circleSpacing,
+    currentPointRadius,
+    currentPointStyle
+  );
 
   // Reset styles
   stroke(0);
-  noFill(); */
+  noFill();
 }
 
 function setup() {
